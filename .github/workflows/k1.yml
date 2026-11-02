@@ -24,25 +24,29 @@ jobs:
           mkdir -p evidence
 
       - name: Record tool versions
+        shell: bash
         run: |
+          set -o pipefail
           make info 2>&1 | tee evidence/00-versions.log
 
       - name: Build and statically verify (acceptance 1, 2)
+        shell: bash
         run: |
+          set -o pipefail
           make clean
           make verify 2>&1 | tee evidence/01-verify.log
 
       - name: Run kernel in QEMU and capture UART (acceptance 4, 5)
         run: |
           set +e
-          timeout 20 qemu-system-arm \
+          QEMU_AUDIO_DRV=none timeout 20 qemu-system-arm \
             -M integratorcp -cpu arm1136 -m 64M \
             -display none -serial file:build/uart.log \
             -kernel build/minitos-k1.elf </dev/null > evidence/02-qemu.log 2>&1
           rc=$?
           set -e
           echo "qemu exit code: $rc" >> evidence/02-qemu.log
-          if [ -f build/uart.log ]; then
+          if [ -s build/uart.log ]; then
             cp build/uart.log evidence/02-uart.log
             echo '=== UART log ==='
             cat build/uart.log
@@ -50,12 +54,14 @@ jobs:
             grep -a 'MINITOS KERNEL STARTED' build/uart.log
             grep -a 'K1 image base' build/uart.log
           else
-            echo 'FATAL: QEMU produced no build/uart.log' | tee -a evidence/02-qemu.log
+            echo 'FATAL: QEMU produced no UART output' | tee -a evidence/02-qemu.log
             exit 1
           fi
 
       - name: Reproducibility check - rebuild must be byte-identical (acceptance 6)
+        shell: bash
         run: |
+          set -o pipefail
           s1=$(sha256sum build/minitos-k1.elf | awk '{print $1}')
           make clean
           make all 2>&1 | tee evidence/03-rebuild.log

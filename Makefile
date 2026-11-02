@@ -1,11 +1,15 @@
 # MinitOS K1 — build for QEMU integratorcp (ARMv6 / ARM1136).
 
 TARGET      := arm-none-eabi
-CC          ?= clang
-OBJCOPY     ?= llvm-objcopy
-OBJDUMP     ?= llvm-objdump
-READELF     ?= readelf
-PYTHON      ?= python3
+
+# Toolchain. NOTE: CC is a GNU make built-in defaulting to 'cc', so '?='
+# would silently keep 'cc'. ':=' pins the tools; command-line overrides
+# (make CC=clang-19 ...) still take precedence.
+CC       := clang
+OBJCOPY  := llvm-objcopy
+OBJDUMP  := llvm-objdump
+READELF  := readelf
+PYTHON   := python3
 
 BUILD       := build
 ELF         := $(BUILD)/minitos-k1.elf
