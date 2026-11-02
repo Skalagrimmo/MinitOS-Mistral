@@ -1,0 +1,7 @@
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -fno-common -fno-unwind-tables -fno-asynchronous-unwind-tables -c src/boot/start.S -o build/boot/start.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -fno-common -fno-unwind-tables -fno-asynchronous-unwind-tables -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -c src/drivers/pl011.c -o build/drivers/pl011.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -fno-common -fno-unwind-tables -fno-asynchronous-unwind-tables -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -c src/kernel/main.c -o build/kernel/main.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -nostdlib -static -fuse-ld=lld -Wl,-T,linker/integratorcp.ld -Wl,-Map,build/minitos-k1.map -Wl,--build-id=none build/boot/start.o build/drivers/pl011.o build/kernel/main.o -o build/minitos-k1.elf
+llvm-objcopy -O binary build/minitos-k1.elf build/minitos-k1.bin
+build 1 sha256: 45782ff492a41c9a9362de18e10f2a2768d088b5551761f0bb8838240ed2967d
+build 2 sha256: 45782ff492a41c9a9362de18e10f2a2768d088b5551761f0bb8838240ed2967d

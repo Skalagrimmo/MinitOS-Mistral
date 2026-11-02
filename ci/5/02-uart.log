@@ -1,0 +1,5 @@
+
+MINITOS KERNEL STARTED
+K1 platform: qemu-system-arm -M integratorcp -cpu arm1136
+K1 image base: 0x00010000  stack top: 0x00014330
+K1 idle: entering WFI loop
