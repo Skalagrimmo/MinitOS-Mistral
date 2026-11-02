@@ -1,0 +1,129 @@
+     VMA      LMA     Size Align Out     In      Symbol
+       0        0       20     1 .vectors
+       0        0       20     1         build/exceptions/vectors.o:(.vectors)
+       0        0        0     1                 $a.0
+       0        0       20     1                 _vector_table
+   10000    10000      970     4 .text
+   10000    10000       bc     4         build/boot/start.o:(.text.boot)
+   10000    10000        0     1                 $a.0
+   10000    10000       9c     1                 _start
+   1009c    1009c        0     1                 $d.1
+   100bc    100bc        0     4         build/boot/start.o:(.text)
+   100bc    100bc        0     4         build/exceptions/vectors.o:(.text)
+   100bc    100bc      174     1         build/exceptions/vectors.o:(.text.exceptions)
+   100bc    100bc        0     1                 $a.1
+   100bc    100bc        0     1                 minit_vec_reset
+   100c0    100c0        0     1                 minit_entry_und
+   100f4    100f4        0     1                 minit_entry_svc
+   10128    10128        0     1                 minit_entry_pabt
+   1015c    1015c        0     1                 minit_entry_dabt
+   10194    10194        0     1                 minit_entry_reserved
+   101c8    101c8        0     1                 minit_entry_irq
+   101fc    101fc        0     1                 minit_entry_fiq
+   10230    10230      22c     4         build/exceptions/handlers.o:(.text)
+   10230    10230        0     1                 $a.0
+   10230    10230      22c     1                 minit_exception_dispatch
+   10410    10410        0     1                 $d.1
+   1045c    1045c      1d8     4         build/drivers/pl011.o:(.text)
+   1045c    1045c        0     1                 $a.0
+   1045c    1045c       48     1                 uart0_init
+   104a4    104a4       20     1                 uart0_putc
+   104c4    104c4       38     1                 uart0_puts
+   104fc    104fc      138     1                 uart0_puthex32
+   10630    10630        0     1                 $d.1
+   10634    10634        0     4         build/tests/faults.o:(.text)
+   10634    10634       1c     4         build/tests/faults.o:(.text.tests)
+   10634    10634        0     1                 $a.0
+   10634    10634        0     1                 minit_test_trigger_undef
+   1063c    1063c        0     1                 minit_test_trigger_data_abort
+   1064c    1064c        0     1                 $d.1
+   10650    10650       d4     4         build/tests/scenarios.o:(.text)
+   10650    10650        0     1                 $a.0
+   10650    10650       2c     1                 minit_test_run_undef
+   10674    10674        0     1                 $d.1
+   1067c    1067c        0     1                 $a.2
+   1067c    1067c       a8     1                 minit_test_run_data_abort
+   10708    10708        0     1                 $d.3
+   10724    10724      24c     4         build/main-normal.o:(.text)
+   10724    10724        0     1                 $a.0
+   10724    10724      24c     1                 kmain
+   108f8    108f8        0     1                 $d.1
+   10970    10970      454     4 .rodata
+   10970    10970      416     1         <internal>:(.rodata.str1.1)
+   10d88    10d88       3c     4         build/exceptions/handlers.o:(.rodata)
+   10dc4    10dc4        c     4 .data
+   10dc4    10dc4        8     4         build/tests/scenarios.o:(.data)
+   10dc4    10dc4        8     1                 minit_test_area
+   10dcc    10dcc        4     4         build/main-normal.o:(.data)
+   10dcc    10dcc        4     1                 minit_sctlr_after_setup
+   10dd0    10dd0        0     1 .bss
+   10dd0    10dd0        0     1         . = ALIGN ( 8 )
+   10dd0    10dd0        0     1         __bss_start__ = .
+   10dd0    10dd0        0     1         . = ALIGN ( 8 )
+   10dd0    10dd0        0     1         __bss_end__ = .
+   10dd0    10dd0     3000     1 .stacks
+   10dd0    10dd0        0     1         __irq_stack_bottom__ = .
+   10dd0    10dd0      400     1         . += 0x400
+   111d0    111d0        0     1         __irq_stack_top__ = .
+   111d0    111d0        0     1         __fiq_stack_bottom__ = .
+   111d0    111d0      400     1         . += 0x400
+   115d0    115d0        0     1         __fiq_stack_top__ = .
+   115d0    115d0        0     1         __und_stack_bottom__ = .
+   115d0    115d0      400     1         . += 0x400
+   119d0    119d0        0     1         __und_stack_top__ = .
+   119d0    119d0        0     1         __abt_stack_bottom__ = .
+   119d0    119d0      400     1         . += 0x400
+   11dd0    11dd0        0     1         __abt_stack_top__ = .
+   11dd0    11dd0        0     1         __svc_stack_bottom__ = .
+   11dd0    11dd0     2000     1         . += 0x2000
+   13dd0    13dd0        0     1         __svc_stack_top__ = .
+   13dd0    13dd0        0     1 
+   13dd0    13dd0        0     1 
+       0        0      296     1 .debug_loclists
+       0        0      104     1         build/exceptions/handlers.o:(.debug_loclists)
+     104      104       8f     1         build/drivers/pl011.o:(.debug_loclists)
+     193      193       43     1         build/tests/scenarios.o:(.debug_loclists)
+     1d6      1d6       c0     1         build/main-normal.o:(.debug_loclists)
+       0        0      592     1 .debug_abbrev
+       0        0      187     1         build/exceptions/handlers.o:(.debug_abbrev)
+     187      187      14e     1         build/drivers/pl011.o:(.debug_abbrev)
+     2d5      2d5      164     1         build/tests/scenarios.o:(.debug_abbrev)
+     439      439      159     1         build/main-normal.o:(.debug_abbrev)
+       0        0      d93     1 .debug_info
+       0        0      587     1         build/exceptions/handlers.o:(.debug_info)
+     587      587      136     1         build/drivers/pl011.o:(.debug_info)
+     6bd      6bd      255     1         build/tests/scenarios.o:(.debug_info)
+     912      912      481     1         build/main-normal.o:(.debug_info)
+       0        0       cd     1 .debug_rnglists
+       0        0       62     1         build/exceptions/handlers.o:(.debug_rnglists)
+      62       62       6b     1         build/drivers/pl011.o:(.debug_rnglists)
+       0        0      1a0     1 .debug_str_offsets
+       0        0       88     1         build/exceptions/handlers.o:(.debug_str_offsets)
+      88       88       58     1         build/drivers/pl011.o:(.debug_str_offsets)
+      e0       e0       68     1         build/tests/scenarios.o:(.debug_str_offsets)
+     148      148       58     1         build/main-normal.o:(.debug_str_offsets)
+       0        0      314     1 .debug_str
+       0        0      314     1         <internal>:(.debug_str)
+       0        0      2c4     1 .debug_addr
+       0        0      110     1         build/exceptions/handlers.o:(.debug_addr)
+     110      110       20     1         build/drivers/pl011.o:(.debug_addr)
+     130      130       78     1         build/tests/scenarios.o:(.debug_addr)
+     1a8      1a8      11c     1         build/main-normal.o:(.debug_addr)
+       0        0      100     4 .debug_frame
+       0        0       30     4         build/exceptions/handlers.o:(.debug_frame)
+      30       30       54     4         build/drivers/pl011.o:(.debug_frame)
+      84       84       4c     4         build/tests/scenarios.o:(.debug_frame)
+      d0       d0       30     4         build/main-normal.o:(.debug_frame)
+       0        0      57d     1 .debug_line
+       0        0      1ae     1         build/exceptions/handlers.o:(.debug_line)
+     1ae      1ae      1e3     1         build/drivers/pl011.o:(.debug_line)
+     391      391       f1     1         build/tests/scenarios.o:(.debug_line)
+     482      482       fb     1         build/main-normal.o:(.debug_line)
+       0        0       e1     1 .debug_line_str
+       0        0       e1     1         <internal>:(.debug_line_str)
+       0        0      3e0     4 .symtab
+       0        0      3e0     4         <internal>:(.symtab)
+       0        0       d2     1 .shstrtab
+       0        0       d2     1         <internal>:(.shstrtab)
+       0        0      31c     1 .strtab
+       0        0      31c     1         <internal>:(.strtab)
