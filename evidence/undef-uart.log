@@ -1,0 +1,21 @@
+
+MINITOS KERNEL STARTED
+K2 platform: qemu-system-arm -M integratorcp -cpu arm1136 -m 128M
+K2 sctlr: 0x00050078
+K2 vectors: low @ 0x00000000
+K2 cpsr: 0x600001d3
+K2 stack: svc 0x00011db0-0x00013db0
+K2 stack: und 0x000115b0-0x000119b0
+K2 stack: abt 0x000119b0-0x00011db0
+K2 stack: irq 0x00010db0-0x000111b0
+K2 stack: fiq 0x000111b0-0x000115b0
+K2 test: undefined
+K2 test: executing UDF (.inst 0xE7F000F0)
+
+EXCEPTION: UNDEFINED INSTRUCTION
+vector: 0x00000004
+mode: UND
+lr: 0x00010638
+spsr: 0x600001d3
+fault_pc: 0x00010634
+K2 EXCEPTION CAPTURED

@@ -1,0 +1,7 @@
+78789713a2d229faee20d8bba8d163b595f212c91eaf58b3485affcccec178d5  build/minitos-k2-normal.elf
+47bb3b85f2c5e46166a5e166a477819889066f46ddf6ea67b4585b2daa6b0f60  build/minitos-k2-undef.elf
+50292f1fb3b1ac9b17ae632e1bb64f37320122b4038496620943bfd5a54bede4  build/minitos-k2-data-abort.elf
+78789713a2d229faee20d8bba8d163b595f212c91eaf58b3485affcccec178d5  build/minitos-k2-normal.elf
+47bb3b85f2c5e46166a5e166a477819889066f46ddf6ea67b4585b2daa6b0f60  build/minitos-k2-undef.elf
+50292f1fb3b1ac9b17ae632e1bb64f37320122b4038496620943bfd5a54bede4  build/minitos-k2-data-abort.elf
+--- second build must be byte-identical (diff empty) ---
