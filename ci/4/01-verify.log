@@ -1,0 +1,6 @@
+cc --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -fno-common -fno-unwind-tables -fno-asynchronous-unwind-tables -c src/boot/start.S -o build/boot/start.o
+cc: warning: ‘-mcpu=’ is deprecated; use ‘-mtune=’ or ‘-march=’ instead
+cc: error: unrecognized command-line option ‘--target=arm-none-eabi’
+cc: error: unrecognized command-line option ‘-marm’; did you mean ‘-mabm’?
+cc: error: unrecognized command-line option ‘-mfloat-abi=soft’
+make: *** [Makefile:37: build/boot/start.o] Error 1
