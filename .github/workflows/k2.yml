@@ -1,0 +1,116 @@
+name: k2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  k2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang lld llvm binutils qemu-system-arm python3
+
+      - name: Record tool versions
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p evidence
+          make info 2>&1 | tee evidence/00-versions.log
+
+      - name: Build all three scenarios and statically verify
+        shell: bash
+        run: |
+          set -o pipefail
+          make clean
+          make verify 2>&1 | tee evidence/elf-check.log
+
+      - name: Disassembly artifacts and linker map
+        run: |
+          make disasm
+          cp build/disassembly-vectors.txt evidence/
+          cp build/disassembly-handlers.txt evidence/
+          cp build/disassembly-full.txt evidence/
+          cp build/minitos-k2-normal.map evidence/linker-map.txt
+
+      - name: Record QEMU platform
+        run: |
+          qemu-system-arm --version | tee evidence/qemu-platform.log
+          qemu-system-arm -M help | grep -i integratorcp | tee -a evidence/qemu-platform.log
+
+      - name: Run scenario normal in QEMU
+        run: |
+          sh scripts/k2-harness.sh build/minitos-k2-normal.elf 'K2 idle: entering WFI loop' evidence/normal-uart.log
+          grep -a 'MINITOS KERNEL STARTED' evidence/normal-uart.log
+          grep -a 'K2 vectors: low @ 0x00000000' evidence/normal-uart.log
+          grep -a 'K2 cpsr: 0x' evidence/normal-uart.log
+          grep -a 'K2 test: normal' evidence/normal-uart.log
+
+      - name: Run scenario undef in QEMU
+        run: |
+          sh scripts/k2-harness.sh build/minitos-k2-undef.elf 'K2 EXCEPTION CAPTURED' evidence/undef-uart.log
+          grep -a 'MINITOS KERNEL STARTED' evidence/undef-uart.log
+          grep -a 'K2 test: undefined' evidence/undef-uart.log
+          grep -a 'EXCEPTION: UNDEFINED INSTRUCTION' evidence/undef-uart.log
+          grep -a 'vector: 0x00000004' evidence/undef-uart.log
+          grep -a 'mode: UND' evidence/undef-uart.log
+          grep -a 'lr: 0x' evidence/undef-uart.log
+          grep -a 'spsr: 0x' evidence/undef-uart.log
+          grep -a 'fault_pc: 0x' evidence/undef-uart.log
+          grep -a 'K2 EXCEPTION CAPTURED' evidence/undef-uart.log
+
+      - name: Run scenario data-abort in QEMU
+        run: |
+          sh scripts/k2-harness.sh build/minitos-k2-data-abort.elf 'K2 EXCEPTION CAPTURED' evidence/data-abort-uart.log
+          grep -a 'MINITOS KERNEL STARTED' evidence/data-abort-uart.log
+          grep -a 'K2 test: data-abort' evidence/data-abort-uart.log
+          grep -a 'EXCEPTION: DATA ABORT' evidence/data-abort-uart.log
+          grep -a 'vector: 0x00000010' evidence/data-abort-uart.log
+          grep -a 'mode: ABT' evidence/data-abort-uart.log
+          grep -a 'dfsr: 0x' evidence/data-abort-uart.log
+          grep -a 'dfar: 0x' evidence/data-abort-uart.log
+          grep -a 'fault_pc: 0x' evidence/data-abort-uart.log
+          grep -a 'K2 ALIGNMENT FAULT CONFIRMED' evidence/data-abort-uart.log
+          grep -a 'K2 DFAR MATCH TEST AREA' evidence/data-abort-uart.log
+          grep -a 'K2 EXCEPTION CAPTURED' evidence/data-abort-uart.log
+
+      - name: Reproducibility check
+        shell: bash
+        run: |
+          set -o pipefail
+          for s in normal undef data-abort; do sha256sum "build/minitos-k2-$s.elf"; done > evidence/repro-hashes.txt
+          make clean
+          make all
+          for s in normal undef data-abort; do sha256sum "build/minitos-k2-$s.elf"; done >> evidence/repro-hashes.txt
+          echo '--- second build must be byte-identical (diff empty) ---' >> evidence/repro-hashes.txt
+          head -n 3 evidence/repro-hashes.txt | awk '{print $1}' > /tmp/first.txt
+          tail -n 3 evidence/repro-hashes.txt | awk '{print $1}' > /tmp/second.txt
+          diff /tmp/first.txt /tmp/second.txt
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: minitos-k2-artifacts
+          path: |
+            evidence/
+            build/*.elf
+            build/*.bin
+
+      - name: Publish CI evidence branch
+        if: always()
+        shell: bash
+        run: |
+          git config user.name "MinitOS CI"
+          git config user.email "ci@minitos.local"
+          git add -A evidence/
+          git commit --allow-empty -m "CI evidence run $GITHUB_RUN_NUMBER"
+          git push origin HEAD:refs/heads/ci/evidence/$GITHUB_RUN_NUMBER
