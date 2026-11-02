@@ -64,12 +64,13 @@ SECTIONS
         __bss_end__ = .;
     } > RAM :data
 
-    /* Banked exception stacks (TZ section 4.2). Sizes are static, the
-       region is 16-byte aligned and every stack top is 8-byte aligned for
+    /* Banked exception stacks (TZ section 4.2). The section start is
+       aligned via its address expression (an internal ALIGN would count
+       the padding bytes into SIZEOF), so SIZEOF(.stacks) is exactly the
+       sum of the five stack sizes. Every stack top is 8-byte aligned for
        the AAPCS C ABI. Boundaries are printed at runtime for evidence. */
-    .stacks (NOLOAD) :
+    .stacks ALIGN(16) (NOLOAD) :
     {
-        . = ALIGN(16);
         __irq_stack_bottom__ = .;
         . += 0x400;
         __irq_stack_top__ = .;
