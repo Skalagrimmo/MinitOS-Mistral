@@ -1,56 +1,84 @@
-# MinitOS K1 — Architecture
+# MinitOS K2 — Architecture
 
 ## Boot flow
 
-1. QEMU (integratorcp, ARM1136) loads the ELF image passed with -kernel at
-   its program-header addresses and sets the PC to the ELF entry point
-   (verified in QEMU hw/arm/boot.c: an ELF image is not treated as Linux).
-2. CPU starts at _start (src/boot/start.S) in ARM state.
-3. _start sets sp to __stack_top__, zeroes .bss, calls kmain.
-4. kmain (src/kernel/main.c) initializes UART0, prints the banner and
-   link-time constants as hex, then parks the CPU in a WFI loop.
+1. QEMU (integratorcp, ARM1136, 128 MiB) loads the ELF passed with
+   -kernel at its program-header addresses and sets the PC to the ELF
+   entry point _start (src/boot/start.S), ARM state.
+2. _start forces SVC mode with IRQ/FIQ masked, clears SCTLR.V with
+   read-modify-write and read-back (stored to minit_sctlr_after_setup),
+   installs banked stacks for IRQ/FIQ/ABT/UND/SVC, zeroes .bss, then
+   calls kmain.
+3. kmain initializes UART0 (PL011 at 0x16000000), prints the executed
+   startup diagnostics (SCTLR, vector base, CPSR, stack boundaries) and
+   dispatches to the scenario compiled in (normal / undef / data-abort).
+
+## Exception flow (the K2 addition)
+
+- Any ARMv6 exception enters at 0x00000000 + offset (low vectors,
+  SCTLR.V = 0). The .vectors segment contains eight branches, one per
+  vector slot, to defined handlers or stubs.
+- Each EXC_ENTRY wrapper builds the 18-word minit_exc_frame_t on the
+  entered mode's banked stack (r0-r12, banked LR, SPSR, vector offset;
+  DFSR/DFAR via CP15 c5/c6 for Data Abort) and tail-calls the C
+  dispatcher with the frame pointer.
+- minit_exception_dispatch prints the diagnostics contract (exception
+  type, vector, mode, lr, spsr, dfsr/dfar, reconstructed fault_pc),
+  executes the runtime assertions for the alignment test, prints
+  "K2 EXCEPTION CAPTURED" and parks in a WFI halt. K2 never returns from
+  an exception.
+- The exception ABI (modes, stacks, frame, LR offsets) is the contract
+  documented in docs/EXCEPTION_ABI.md.
 
 ## Memory layout (linker/integratorcp.ld)
 
 | Region | Address | Notes |
 |---|---|---|
-| Low memory | 0x00000000-0x0000FFFF | Reserved for exception vectors (K2+). |
-| Image (.text/.rodata/.data) | from 0x00010000 | Matches ELF entry. |
-| .bss (NOLOAD) | after .data | Zeroed by _start before C code runs. |
-| .stack (NOLOAD) | 16 KiB after the image | __stack_top__ = top of the stack block. |
-| RAM size | 64 MiB | Pinned by -m 64M in scripts/run-qemu.sh; linker region must stay in sync. |
+| .vectors | 0x00000000, 32 bytes | Own R+E PT_LOAD segment, 8 branch slots. |
+| Reserved | 0x00000020-0x0000FFFF | Low 64 KiB kept free. |
+| .text/.rodata | from 0x00010000 | R+E segment; ELF entry _start at 0x00010000. |
+| .data | after .rodata | e.g. minit_test_area, minit_sctlr_after_setup. |
+| .bss (NOLOAD) | after .data | 8-byte aligned, zeroed by _start. |
+| .stacks (NOLOAD) | after .bss | IRQ/FIQ/UND/ABT 0x400 each, SVC 0x2000. |
+| RAM size | 128 MiB | Pinned by -m 128M in scripts/run-qemu.sh and scripts/k2-harness.sh. |
 
-SDRAM starts at 0x00000000 on integratorcp and is also aliased at 0x80000000.
+SDRAM starts at 0x00000000 on integratorcp (aliased again at 0x80000000).
 
 ## Module boundaries
 
 | Unit | Responsibility |
 |---|---|
-| include/minit/platform.h | The only place with hardware addresses (K1: QEMU integratorcp). |
-| include/minit/uart.h | UART API contract. |
-| include/minit/kernel.h | Kernel entry contract. |
-| src/boot/start.S | Entry, stack setup, BSS clear; no C runs before these are done. |
-| src/drivers/pl011.c | Generic PL011 logic; the base address comes from platform.h. |
-| src/kernel/main.c | Kernel policy; talks only to the uart.h API. |
+| include/minit/platform.h | The only place with hardware addresses (QEMU integratorcp). |
+| include/minit/exceptions.h | Exception ABI: vector offsets, frame type, dispatcher contract. |
+| include/minit/tests.h | Scenario ids and test contracts. |
+| src/boot/start.S | Mode, SCTLR.V, banked stacks, BSS clear; no C before this. |
+| src/exceptions/vectors.S | Vector table and frame-building entry wrappers. |
+| src/exceptions/handlers.c | Fail-stop C dispatcher and fault diagnostics. |
+| src/kernel/main.c | Kernel policy, executed startup diagnostics, scenario dispatch. |
+| src/tests/faults.S | Raw fault triggers (UDF, unaligned LDR) as real instructions. |
+| src/tests/scenarios.c | Test orchestration: SCTLR RMW + read-back, prints. |
+| src/drivers/pl011.c | Generic PL011 logic; base address from platform.h. |
+| linker/integratorcp.ld | Layout contract incl. the vectors segment and stacks. |
+| tools/verify_elf.py | Executed static checks of the artifacts. |
+| scripts/k2-harness.sh | Marker-terminated QEMU runtime harness. |
 
-Rule for the future MSM7227 (Galaxy Gio) port: kernel/main.c and the PL011
-logic must not change; the port replaces platform.h and adds its own boot
-path, because that board's memory map and boot protocol are different and
-still unverified.
-
-## K1 limitations (intentional)
-
-- No interrupt controller setup; no exception vector table at 0x0
-  (any exception is fatal — documented in docs/K1_REPORT.md).
-- Single core, single thread of execution; no scheduler.
-- UART: polled TX only; RX is not handled in K1.
-- No MMU, no physical memory manager yet.
+Rule for the future MSM7227 (Galaxy Gio) port: kernel policy, exception
+frame and PL011 logic must not change; the port replaces platform.h, the
+linker script and the boot path, because that board's memory map, vector
+base and boot protocol are different and still unverified.
 
 ## Verification model
 
-tools/verify_elf.py checks structural facts of the artifact: ELF class,
-endianness, machine, ELF type, entry equals the expected address and lies
-inside a PT_LOAD segment, required symbols exist, the banner string is
-embedded, and the SHA-256 of the image is printed (for reproducible-build
-comparison). It makes no claim about runtime behaviour; runtime proof is
-the UART output produced via scripts/run-qemu.sh.
+- Static: tools/verify_elf.py (ELF class, endianness, machine, ET_EXEC,
+  EABI5, entry inside PT_LOAD, vector segment with 8 branch slots,
+  symbols, stack-top alignment, no undefined symbols, banner/exception
+  strings, UDF bytes, SHA-256).
+- Runtime: each scenario boots in its own QEMU process; the harness
+  terminates QEMU only after the scenario's terminal UART marker, and
+  CI greps per-scenario required lines (vector offset, mode, DFSR/DFAR
+  assertions). Executed evidence is committed in docs/evidence/.
+
+## K2 limitations (intentional)
+
+- Fail-stop exception handling; no recovery, no MMU, no interrupt
+  controller, no scheduler (see docs/ASSUMPTIONS_AND_LIMITATIONS.md).
