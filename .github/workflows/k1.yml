@@ -1,0 +1,61 @@
+name: k1-build-run
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  k1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install toolchain (clang, lld, llvm, binutils, qemu)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld llvm binutils qemu-system-arm python3
+
+      - name: Record tool versions
+        run: |
+          make info
+
+      - name: Build and statically verify (acceptance 1, 2)
+        run: |
+          make clean
+          make verify
+
+      - name: Run kernel in QEMU and capture UART (acceptance 4, 5)
+        run: |
+          timeout 20 qemu-system-arm \
+            -M integratorcp -cpu arm1136 -m 64M \
+            -display none -serial file:build/uart.log \
+            -kernel build/minitos-k1.elf </dev/null || true
+          echo '=== UART log ==='
+          cat build/uart.log
+          echo '=== banner checks ==='
+          grep -a 'MINITOS KERNEL STARTED' build/uart.log
+          grep -a 'K1 image base' build/uart.log
+
+      - name: Reproducibility check: rebuild must be byte-identical (acceptance 6)
+        run: |
+          s1=$(sha256sum build/minitos-k1.elf | awk '{print $1}')
+          make clean
+          make all
+          s2=$(sha256sum build/minitos-k1.elf | awk '{print $1}')
+          echo "build 1 sha256: $s1"
+          echo "build 2 sha256: $s2"
+          test "$s1" = "$s2"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: minitos-k1
+          path: |
+            build/minitos-k1.elf
+            build/minitos-k1.bin
+            build/minitos-k1.map
+            build/uart.log
