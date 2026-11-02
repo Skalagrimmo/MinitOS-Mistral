@@ -54,7 +54,7 @@ jobs:
             exit 1
           fi
 
-      - name: Reproducibility check: rebuild must be byte-identical (acceptance 6)
+      - name: Reproducibility check - rebuild must be byte-identical (acceptance 6)
         run: |
           s1=$(sha256sum build/minitos-k1.elf | awk '{print $1}')
           make clean
