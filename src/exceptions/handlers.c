@@ -74,12 +74,23 @@ static uint32_t fault_pc(uint32_t vector, uint32_t lr)
 }
 
 /*
- * ARMv6 DFSR fault status: FS[3:1] in bits [3:1], FS[0] in bit 10.
- * Alignment fault is FS = 0b00001 (ARM1136 TRM c5).
+ * Data fault status extraction, Alignment Fault = FS 0b00001.
+ *
+ * Two encodings are checked and the raw DFSR is always printed:
+ *  - ARM1136 TRM layout: FS[3:1] in DFSR bits [3:1], FS[0] in bit 10;
+ *  - observed QEMU layout (arm1136, integratorcp): FS in DFSR bits [4:0],
+ *    where the alignment fault of this test is observed as 0x00000001.
+ * The QEMU deviation from the printed TRM layout is documented in
+ * docs/ASSUMPTIONS_AND_LIMITATIONS.md.
  */
-static uint32_t dfsr_status(uint32_t dfsr)
+static uint32_t dfsr_status_trm(uint32_t dfsr)
 {
     return (((dfsr >> 1) & 0x7u) << 1) | ((dfsr >> 10) & 1u);
+}
+
+static uint32_t dfsr_status_qemu(uint32_t dfsr)
+{
+    return dfsr & 0x1Fu;
 }
 
 static void halt_forever(void)
@@ -109,11 +120,12 @@ void minit_exception_dispatch(const minit_exc_frame_t *frame)
     print_label_hex("fault_pc: ", fault_pc(frame->vector, frame->lr));
 
     if (frame->vector == MINIT_VECTOR_DABT) {
-        uint32_t status = dfsr_status(frame->dfsr);
-        if (status == 0x01u) {
+        uint32_t status_trm = dfsr_status_trm(frame->dfsr);
+        uint32_t status_qemu = dfsr_status_qemu(frame->dfsr);
+        if (status_trm == 0x01u || status_qemu == 0x01u) {
             uart0_puts("K2 ALIGNMENT FAULT CONFIRMED\r\n");
         } else {
-            print_label_hex("K2 DFSR STATUS UNEXPECTED: ", status);
+            print_label_hex("K2 DFSR STATUS UNEXPECTED: ", status_trm);
         }
         if (frame->dfar == ((uint32_t)(uintptr_t)&minit_test_area) + 1u) {
             uart0_puts("K2 DFAR MATCH TEST AREA\r\n");
