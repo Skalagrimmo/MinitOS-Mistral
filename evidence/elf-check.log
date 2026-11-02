@@ -1,0 +1,62 @@
+mkdir -p build
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -c src/boot/start.S -o build/boot/start.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -c src/exceptions/vectors.S -o build/exceptions/vectors.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -c src/exceptions/handlers.c -o build/exceptions/handlers.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -c src/drivers/pl011.c -o build/drivers/pl011.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -c src/tests/faults.S -o build/tests/faults.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -c src/tests/scenarios.c -o build/tests/scenarios.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -DMINIT_TEST_SCENARIO=0 -c src/kernel/main.c -o build/main-normal.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -nostdlib -static -fuse-ld=lld -Wl,-T,linker/integratorcp.ld -Wl,--build-id=none build/boot/start.o build/exceptions/vectors.o build/exceptions/handlers.o build/drivers/pl011.o build/tests/faults.o build/tests/scenarios.o build/main-normal.o -Wl,-Map,build/minitos-k2-normal.map -o build/minitos-k2-normal.elf
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -DMINIT_TEST_SCENARIO=1 -c src/kernel/main.c -o build/main-undef.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -nostdlib -static -fuse-ld=lld -Wl,-T,linker/integratorcp.ld -Wl,--build-id=none build/boot/start.o build/exceptions/vectors.o build/exceptions/handlers.o build/drivers/pl011.o build/tests/faults.o build/tests/scenarios.o build/main-undef.o -Wl,-Map,build/minitos-k2-undef.map -o build/minitos-k2-undef.elf
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -DMINIT_TEST_SCENARIO=2 -c src/kernel/main.c -o build/main-data-abort.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -nostdlib -static -fuse-ld=lld -Wl,-T,linker/integratorcp.ld -Wl,--build-id=none build/boot/start.o build/exceptions/vectors.o build/exceptions/handlers.o build/drivers/pl011.o build/tests/faults.o build/tests/scenarios.o build/main-data-abort.o -Wl,-Map,build/minitos-k2-data-abort.map -o build/minitos-k2-data-abort.elf
+llvm-objcopy -O binary build/minitos-k2-normal.elf build/minitos-k2-normal.bin
+llvm-objcopy -O binary build/minitos-k2-undef.elf build/minitos-k2-undef.bin
+llvm-objcopy -O binary build/minitos-k2-data-abort.elf build/minitos-k2-data-abort.bin
+readelf -h build/minitos-k2-normal.elf | grep -E 'Class:.*ELF32|Machine:.*ARM|Entry point address:'
+  Class:                             ELF32
+  Machine:                           ARM
+  Entry point address:               0x10000
+readelf -h build/minitos-k2-normal.elf | grep -E 'Flags:'
+  Flags:                             0x5000200, Version5 EABI, soft-float ABI
+readelf -l build/minitos-k2-normal.elf | grep -E 'LOAD'
+  LOAD           0x010000 0x00000000 0x00000000 0x00020 0x00020 R E 0x10000
+  LOAD           0x020000 0x00010000 0x00010000 0x00dbc 0x00dbc R E 0x10000
+  LOAD           0x020dbc 0x00010dbc 0x00010dbc 0x0000c 0x03014 RW  0x10000
+readelf -s build/minitos-k2-normal.elf | grep -E '_start|kmain|minit_exception_dispatch|_vector_table'
+    28: 00010000   156 FUNC    GLOBAL DEFAULT    2 _start
+    29: 0001071c   588 FUNC    GLOBAL DEFAULT    2 kmain
+    36: 00010dc8     0 NOTYPE  GLOBAL DEFAULT    5 __bss_start__
+    38: 00000000    32 OBJECT  GLOBAL DEFAULT    1 _vector_table
+== verify normal ==
+ELF32 LE ARM ET_EXEC EABI5: PASS
+entry 0x00010000 inside PT_LOAD: PASS
+vector segment @ 0x00000000, 32 bytes, R+E, 8 branch slots: PASS
+symbols present, banked stack tops 8-byte aligned: PASS
+no undefined symbols: PASS
+required strings and UDF encoding: PASS
+sha256 elf: d08db6e5a2b4d1dd45e89ddcdcd53dad76fe8aa962a38d1f40966fd9936368e0
+sha256 bin: 1006ae7e36733b064591279d463f27ab9fe89e5e08b23df50c79a27b974f0891
+K2 ELF VERIFY: PASS
+== verify undef ==
+ELF32 LE ARM ET_EXEC EABI5: PASS
+entry 0x00010000 inside PT_LOAD: PASS
+vector segment @ 0x00000000, 32 bytes, R+E, 8 branch slots: PASS
+symbols present, banked stack tops 8-byte aligned: PASS
+no undefined symbols: PASS
+required strings and UDF encoding: PASS
+sha256 elf: a34b7b069dc3630464ea1a1bf399dcc0264da65864cde74316b3e8213ef4ef95
+sha256 bin: e9bd38b00a1ceac39039bc75baf77566dff2c7c07d720ac9fb0079a255bd21e6
+K2 ELF VERIFY: PASS
+== verify data-abort ==
+ELF32 LE ARM ET_EXEC EABI5: PASS
+entry 0x00010000 inside PT_LOAD: PASS
+vector segment @ 0x00000000, 32 bytes, R+E, 8 branch slots: PASS
+symbols present, banked stack tops 8-byte aligned: PASS
+no undefined symbols: PASS
+required strings and UDF encoding: PASS
+sha256 elf: f2a827a1ee5cc9f0dafd62e1779533446c279072e5303baaf535c63b07a9d251
+sha256 bin: 9f51480e5292e701800c4f2878d20c181f48cd9b41cecfdfd12b683d88f4037d
+K2 ELF VERIFY: PASS
+K2 VERIFY: PASS

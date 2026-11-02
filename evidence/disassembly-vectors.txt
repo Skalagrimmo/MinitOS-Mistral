@@ -1,0 +1,12 @@
+
+build/minitos-k2-normal.elf:	file format elf32-littlearm
+
+Disassembly of section .vectors:
+       0: ea00402d     	b	0x100bc <minit_vec_reset> @ imm = #0x100b4
+       4: ea00402d     	b	0x100c0 <minit_entry_und> @ imm = #0x100b4
+       8: ea004039     	b	0x100f4 <minit_entry_svc> @ imm = #0x100e4
+       c: ea004045     	b	0x10128 <minit_entry_pabt> @ imm = #0x10114
+      10: ea004051     	b	0x1015c <minit_entry_dabt> @ imm = #0x10144
+      14: ea00405e     	b	0x10194 <minit_entry_reserved> @ imm = #0x10178
+      18: ea00406a     	b	0x101c8 <minit_entry_irq> @ imm = #0x101a8
+      1c: ea004076     	b	0x101fc <minit_entry_fiq> @ imm = #0x101d8

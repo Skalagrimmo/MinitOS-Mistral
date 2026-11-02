@@ -1,0 +1,654 @@
+
+build/minitos-k2-normal.elf:	file format elf32-littlearm
+
+Disassembly of section .vectors:
+       0: ea00402d     	b	0x100bc <minit_vec_reset> @ imm = #0x100b4
+       4: ea00402d     	b	0x100c0 <minit_entry_und> @ imm = #0x100b4
+       8: ea004039     	b	0x100f4 <minit_entry_svc> @ imm = #0x100e4
+       c: ea004045     	b	0x10128 <minit_entry_pabt> @ imm = #0x10114
+      10: ea004051     	b	0x1015c <minit_entry_dabt> @ imm = #0x10144
+      14: ea00405e     	b	0x10194 <minit_entry_reserved> @ imm = #0x10178
+      18: ea00406a     	b	0x101c8 <minit_entry_irq> @ imm = #0x101a8
+      1c: ea004076     	b	0x101fc <minit_entry_fiq> @ imm = #0x101d8
+
+Disassembly of section .text:
+
+00010000 <_start>:
+   10000: e10f0000     	mrs	r0, apsr
+   10004: e3c0001f     	bic	r0, r0, #31
+   10008: e3800013     	orr	r0, r0, #19
+   1000c: e38000c0     	orr	r0, r0, #192
+   10010: e121f000     	msr	CPSR_c, r0
+   10014: ee110f10     	mrc	p15, #0x0, r0, c1, c0, #0x0
+   10018: e3c00a02     	bic	r0, r0, #8192
+   1001c: ee010f10     	mcr	p15, #0x0, r0, c1, c0, #0x0
+   10020: ee110f10     	mrc	p15, #0x0, r0, c1, c0, #0x0
+   10024: e59f1070     	ldr	r1, [pc, #0x70]         @ 0x1009c <_start+0x9c>
+   10028: e5810000     	str	r0, [r1]
+   1002c: e3a00012     	mov	r0, #18
+   10030: e38000c0     	orr	r0, r0, #192
+   10034: e121f000     	msr	CPSR_c, r0
+   10038: e59fd060     	ldr	sp, [pc, #0x60]         @ 0x100a0 <_start+0xa0>
+   1003c: e3a00011     	mov	r0, #17
+   10040: e38000c0     	orr	r0, r0, #192
+   10044: e121f000     	msr	CPSR_c, r0
+   10048: e59fd054     	ldr	sp, [pc, #0x54]         @ 0x100a4 <_start+0xa4>
+   1004c: e3a00017     	mov	r0, #23
+   10050: e38000c0     	orr	r0, r0, #192
+   10054: e121f000     	msr	CPSR_c, r0
+   10058: e59fd048     	ldr	sp, [pc, #0x48]         @ 0x100a8 <_start+0xa8>
+   1005c: e3a0001b     	mov	r0, #27
+   10060: e38000c0     	orr	r0, r0, #192
+   10064: e121f000     	msr	CPSR_c, r0
+   10068: e59fd03c     	ldr	sp, [pc, #0x3c]         @ 0x100ac <_start+0xac>
+   1006c: e3a00013     	mov	r0, #19
+   10070: e38000c0     	orr	r0, r0, #192
+   10074: e121f000     	msr	CPSR_c, r0
+   10078: e59fd030     	ldr	sp, [pc, #0x30]         @ 0x100b0 <_start+0xb0>
+   1007c: e59f0030     	ldr	r0, [pc, #0x30]         @ 0x100b4 <_start+0xb4>
+   10080: e59f1030     	ldr	r1, [pc, #0x30]         @ 0x100b8 <_start+0xb8>
+   10084: e3a02000     	mov	r2, #0
+   10088: e1500001     	cmp	r0, r1
+   1008c: 34802004     	strlo	r2, [r0], #4
+   10090: 3afffffc     	blo	0x10088 <_start+0x88>   @ imm = #-0x10
+   10094: eb0001a0     	bl	0x1071c <kmain>         @ imm = #0x680
+   10098: eafffffe     	b	0x10098 <_start+0x98>   @ imm = #-0x8
+   1009c: c4 0d 01 00  	.word	0x00010dc4
+   100a0: d0 11 01 00  	.word	0x000111d0
+   100a4: d0 15 01 00  	.word	0x000115d0
+   100a8: d0 1d 01 00  	.word	0x00011dd0
+   100ac: d0 19 01 00  	.word	0x000119d0
+   100b0: d0 3d 01 00  	.word	0x00013dd0
+   100b4: c8 0d 01 00  	.word	0x00010dc8
+   100b8: c8 0d 01 00  	.word	0x00010dc8
+
+000100bc <minit_vec_reset>:
+   100bc: eaffffcf     	b	0x10000 <_start>        @ imm = #-0xc4
+
+000100c0 <minit_entry_und>:
+   100c0: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   100c4: e24dd014     	sub	sp, sp, #20
+   100c8: e1a0000e     	mov	r0, lr
+   100cc: e3a01004     	mov	r1, #4
+   100d0: e58d0034     	str	r0, [sp, #0x34]
+   100d4: e14f0000     	mrs	r0, spsr
+   100d8: e58d0038     	str	r0, [sp, #0x38]
+   100dc: e58d103c     	str	r1, [sp, #0x3c]
+   100e0: e3a00000     	mov	r0, #0
+   100e4: e58d0040     	str	r0, [sp, #0x40]
+   100e8: e58d0044     	str	r0, [sp, #0x44]
+   100ec: e1a0000d     	mov	r0, sp
+   100f0: ea00004e     	b	0x10230 <minit_exception_dispatch> @ imm = #0x138
+
+000100f4 <minit_entry_svc>:
+   100f4: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   100f8: e24dd014     	sub	sp, sp, #20
+   100fc: e1a0000e     	mov	r0, lr
+   10100: e3a01008     	mov	r1, #8
+   10104: e58d0034     	str	r0, [sp, #0x34]
+   10108: e14f0000     	mrs	r0, spsr
+   1010c: e58d0038     	str	r0, [sp, #0x38]
+   10110: e58d103c     	str	r1, [sp, #0x3c]
+   10114: e3a00000     	mov	r0, #0
+   10118: e58d0040     	str	r0, [sp, #0x40]
+   1011c: e58d0044     	str	r0, [sp, #0x44]
+   10120: e1a0000d     	mov	r0, sp
+   10124: ea000041     	b	0x10230 <minit_exception_dispatch> @ imm = #0x104
+
+00010128 <minit_entry_pabt>:
+   10128: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   1012c: e24dd014     	sub	sp, sp, #20
+   10130: e1a0000e     	mov	r0, lr
+   10134: e3a0100c     	mov	r1, #12
+   10138: e58d0034     	str	r0, [sp, #0x34]
+   1013c: e14f0000     	mrs	r0, spsr
+   10140: e58d0038     	str	r0, [sp, #0x38]
+   10144: e58d103c     	str	r1, [sp, #0x3c]
+   10148: e3a00000     	mov	r0, #0
+   1014c: e58d0040     	str	r0, [sp, #0x40]
+   10150: e58d0044     	str	r0, [sp, #0x44]
+   10154: e1a0000d     	mov	r0, sp
+   10158: ea000034     	b	0x10230 <minit_exception_dispatch> @ imm = #0xd0
+
+0001015c <minit_entry_dabt>:
+   1015c: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   10160: e24dd014     	sub	sp, sp, #20
+   10164: e1a0000e     	mov	r0, lr
+   10168: e3a01010     	mov	r1, #16
+   1016c: e58d0034     	str	r0, [sp, #0x34]
+   10170: e14f0000     	mrs	r0, spsr
+   10174: e58d0038     	str	r0, [sp, #0x38]
+   10178: e58d103c     	str	r1, [sp, #0x3c]
+   1017c: ee150f10     	mrc	p15, #0x0, r0, c5, c0, #0x0
+   10180: e58d0040     	str	r0, [sp, #0x40]
+   10184: ee160f10     	mrc	p15, #0x0, r0, c6, c0, #0x0
+   10188: e58d0044     	str	r0, [sp, #0x44]
+   1018c: e1a0000d     	mov	r0, sp
+   10190: ea000026     	b	0x10230 <minit_exception_dispatch> @ imm = #0x98
+
+00010194 <minit_entry_reserved>:
+   10194: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   10198: e24dd014     	sub	sp, sp, #20
+   1019c: e1a0000e     	mov	r0, lr
+   101a0: e3a01014     	mov	r1, #20
+   101a4: e58d0034     	str	r0, [sp, #0x34]
+   101a8: e14f0000     	mrs	r0, spsr
+   101ac: e58d0038     	str	r0, [sp, #0x38]
+   101b0: e58d103c     	str	r1, [sp, #0x3c]
+   101b4: e3a00000     	mov	r0, #0
+   101b8: e58d0040     	str	r0, [sp, #0x40]
+   101bc: e58d0044     	str	r0, [sp, #0x44]
+   101c0: e1a0000d     	mov	r0, sp
+   101c4: ea000019     	b	0x10230 <minit_exception_dispatch> @ imm = #0x64
+
+000101c8 <minit_entry_irq>:
+   101c8: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   101cc: e24dd014     	sub	sp, sp, #20
+   101d0: e1a0000e     	mov	r0, lr
+   101d4: e3a01018     	mov	r1, #24
+   101d8: e58d0034     	str	r0, [sp, #0x34]
+   101dc: e14f0000     	mrs	r0, spsr
+   101e0: e58d0038     	str	r0, [sp, #0x38]
+   101e4: e58d103c     	str	r1, [sp, #0x3c]
+   101e8: e3a00000     	mov	r0, #0
+   101ec: e58d0040     	str	r0, [sp, #0x40]
+   101f0: e58d0044     	str	r0, [sp, #0x44]
+   101f4: e1a0000d     	mov	r0, sp
+   101f8: ea00000c     	b	0x10230 <minit_exception_dispatch> @ imm = #0x30
+
+000101fc <minit_entry_fiq>:
+   101fc: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   10200: e24dd014     	sub	sp, sp, #20
+   10204: e1a0000e     	mov	r0, lr
+   10208: e3a0101c     	mov	r1, #28
+   1020c: e58d0034     	str	r0, [sp, #0x34]
+   10210: e14f0000     	mrs	r0, spsr
+   10214: e58d0038     	str	r0, [sp, #0x38]
+   10218: e58d103c     	str	r1, [sp, #0x3c]
+   1021c: e3a00000     	mov	r0, #0
+   10220: e58d0040     	str	r0, [sp, #0x40]
+   10224: e58d0044     	str	r0, [sp, #0x44]
+   10228: e1a0000d     	mov	r0, sp
+   1022c: eaffffff     	b	0x10230 <minit_exception_dispatch> @ imm = #-0x4
+
+00010230 <minit_exception_dispatch>:
+   10230: e92d4800     	push	{r11, lr}
+   10234: e1a0b00d     	mov	r11, sp
+   10238: e1a04000     	mov	r4, r0
+   1023c: e59f01c4     	ldr	r0, [pc, #0x1c4]        @ 0x10408 <minit_exception_dispatch+0x1d8>
+   10240: eb00009d     	bl	0x104bc <uart0_puts>    @ imm = #0x274
+   10244: e594003c     	ldr	r0, [r4, #0x3c]
+   10248: e1a00160     	ror	r0, r0, #2
+   1024c: e3500007     	cmp	r0, #7
+   10250: 8a000002     	bhi	0x10260 <minit_exception_dispatch+0x30> @ imm = #0x8
+   10254: e59f11b4     	ldr	r1, [pc, #0x1b4]        @ 0x10410 <minit_exception_dispatch+0x1e0>
+   10258: e7910100     	ldr	r0, [r1, r0, lsl #2]
+   1025c: ea000000     	b	0x10264 <minit_exception_dispatch+0x34> @ imm = #0x0
+   10260: e59f01a4     	ldr	r0, [pc, #0x1a4]        @ 0x1040c <minit_exception_dispatch+0x1dc>
+   10264: eb000094     	bl	0x104bc <uart0_puts>    @ imm = #0x250
+   10268: e59f51a4     	ldr	r5, [pc, #0x1a4]        @ 0x10414 <minit_exception_dispatch+0x1e4>
+   1026c: e1a00005     	mov	r0, r5
+   10270: eb000091     	bl	0x104bc <uart0_puts>    @ imm = #0x244
+   10274: e59f019c     	ldr	r0, [pc, #0x19c]        @ 0x10418 <minit_exception_dispatch+0x1e8>
+   10278: e594603c     	ldr	r6, [r4, #0x3c]
+   1027c: eb00008e     	bl	0x104bc <uart0_puts>    @ imm = #0x238
+   10280: e1a00006     	mov	r0, r6
+   10284: eb00009a     	bl	0x104f4 <uart0_puthex32> @ imm = #0x268
+   10288: e1a00005     	mov	r0, r5
+   1028c: eb00008a     	bl	0x104bc <uart0_puts>    @ imm = #0x228
+   10290: e594003c     	ldr	r0, [r4, #0x3c]
+   10294: e2400004     	sub	r0, r0, #4
+   10298: e1a00160     	ror	r0, r0, #2
+   1029c: e3500006     	cmp	r0, #6
+   102a0: 8a000002     	bhi	0x102b0 <minit_exception_dispatch+0x80> @ imm = #0x8
+   102a4: e59f1174     	ldr	r1, [pc, #0x174]        @ 0x10420 <minit_exception_dispatch+0x1f0>
+   102a8: e7915100     	ldr	r5, [r1, r0, lsl #2]
+   102ac: ea000000     	b	0x102b4 <minit_exception_dispatch+0x84> @ imm = #0x0
+   102b0: e59f5164     	ldr	r5, [pc, #0x164]        @ 0x1041c <minit_exception_dispatch+0x1ec>
+   102b4: e59f0168     	ldr	r0, [pc, #0x168]        @ 0x10424 <minit_exception_dispatch+0x1f4>
+   102b8: eb00007f     	bl	0x104bc <uart0_puts>    @ imm = #0x1fc
+   102bc: e1a00005     	mov	r0, r5
+   102c0: eb00007d     	bl	0x104bc <uart0_puts>    @ imm = #0x1f4
+   102c4: e59f5148     	ldr	r5, [pc, #0x148]        @ 0x10414 <minit_exception_dispatch+0x1e4>
+   102c8: e1a00005     	mov	r0, r5
+   102cc: eb00007a     	bl	0x104bc <uart0_puts>    @ imm = #0x1e8
+   102d0: e59f0150     	ldr	r0, [pc, #0x150]        @ 0x10428 <minit_exception_dispatch+0x1f8>
+   102d4: e5946034     	ldr	r6, [r4, #0x34]
+   102d8: eb000077     	bl	0x104bc <uart0_puts>    @ imm = #0x1dc
+   102dc: e1a00006     	mov	r0, r6
+   102e0: eb000083     	bl	0x104f4 <uart0_puthex32> @ imm = #0x20c
+   102e4: e1a00005     	mov	r0, r5
+   102e8: eb000073     	bl	0x104bc <uart0_puts>    @ imm = #0x1cc
+   102ec: e59f0138     	ldr	r0, [pc, #0x138]        @ 0x1042c <minit_exception_dispatch+0x1fc>
+   102f0: e5946038     	ldr	r6, [r4, #0x38]
+   102f4: eb000070     	bl	0x104bc <uart0_puts>    @ imm = #0x1c0
+   102f8: e1a00006     	mov	r0, r6
+   102fc: eb00007c     	bl	0x104f4 <uart0_puthex32> @ imm = #0x1f0
+   10300: e1a00005     	mov	r0, r5
+   10304: eb00006c     	bl	0x104bc <uart0_puts>    @ imm = #0x1b0
+   10308: e594003c     	ldr	r0, [r4, #0x3c]
+   1030c: e3500010     	cmp	r0, #16
+   10310: 1a00000f     	bne	0x10354 <minit_exception_dispatch+0x124> @ imm = #0x3c
+   10314: e59f0114     	ldr	r0, [pc, #0x114]        @ 0x10430 <minit_exception_dispatch+0x200>
+   10318: e5945040     	ldr	r5, [r4, #0x40]
+   1031c: eb000066     	bl	0x104bc <uart0_puts>    @ imm = #0x198
+   10320: e1a00005     	mov	r0, r5
+   10324: eb000072     	bl	0x104f4 <uart0_puthex32> @ imm = #0x1c8
+   10328: e59f50e4     	ldr	r5, [pc, #0xe4]         @ 0x10414 <minit_exception_dispatch+0x1e4>
+   1032c: e1a00005     	mov	r0, r5
+   10330: eb000061     	bl	0x104bc <uart0_puts>    @ imm = #0x184
+   10334: e59f00f8     	ldr	r0, [pc, #0xf8]         @ 0x10434 <minit_exception_dispatch+0x204>
+   10338: e5946044     	ldr	r6, [r4, #0x44]
+   1033c: eb00005e     	bl	0x104bc <uart0_puts>    @ imm = #0x178
+   10340: e1a00006     	mov	r0, r6
+   10344: eb00006a     	bl	0x104f4 <uart0_puthex32> @ imm = #0x1a8
+   10348: e1a00005     	mov	r0, r5
+   1034c: eb00005a     	bl	0x104bc <uart0_puts>    @ imm = #0x168
+   10350: e594003c     	ldr	r0, [r4, #0x3c]
+   10354: e3500014     	cmp	r0, #20
+   10358: 0a000004     	beq	0x10370 <minit_exception_dispatch+0x140> @ imm = #0x10
+   1035c: e5941034     	ldr	r1, [r4, #0x34]
+   10360: e3500010     	cmp	r0, #16
+   10364: 12415004     	subne	r5, r1, #4
+   10368: 02415008     	subeq	r5, r1, #8
+   1036c: ea000000     	b	0x10374 <minit_exception_dispatch+0x144> @ imm = #0x0
+   10370: e3a05000     	mov	r5, #0
+   10374: e59f00bc     	ldr	r0, [pc, #0xbc]         @ 0x10438 <minit_exception_dispatch+0x208>
+   10378: eb00004f     	bl	0x104bc <uart0_puts>    @ imm = #0x13c
+   1037c: e1a00005     	mov	r0, r5
+   10380: eb00005b     	bl	0x104f4 <uart0_puthex32> @ imm = #0x16c
+   10384: e59f5088     	ldr	r5, [pc, #0x88]         @ 0x10414 <minit_exception_dispatch+0x1e4>
+   10388: e1a00005     	mov	r0, r5
+   1038c: eb00004a     	bl	0x104bc <uart0_puts>    @ imm = #0x128
+   10390: e594003c     	ldr	r0, [r4, #0x3c]
+   10394: e3500010     	cmp	r0, #16
+   10398: 1a000016     	bne	0x103f8 <minit_exception_dispatch+0x1c8> @ imm = #0x58
+   1039c: e5940040     	ldr	r0, [r4, #0x40]
+   103a0: e3a01001     	mov	r1, #1
+   103a4: e0011520     	and	r1, r1, r0, lsr #10
+   103a8: e200000e     	and	r0, r0, #14
+   103ac: e1816000     	orr	r6, r1, r0
+   103b0: e3560001     	cmp	r6, #1
+   103b4: 1a000001     	bne	0x103c0 <minit_exception_dispatch+0x190> @ imm = #0x4
+   103b8: e59f507c     	ldr	r5, [pc, #0x7c]         @ 0x1043c <minit_exception_dispatch+0x20c>
+   103bc: ea000003     	b	0x103d0 <minit_exception_dispatch+0x1a0> @ imm = #0xc
+   103c0: e59f0078     	ldr	r0, [pc, #0x78]         @ 0x10440 <minit_exception_dispatch+0x210>
+   103c4: eb00003c     	bl	0x104bc <uart0_puts>    @ imm = #0xf0
+   103c8: e1a00006     	mov	r0, r6
+   103cc: eb000048     	bl	0x104f4 <uart0_puthex32> @ imm = #0x120
+   103d0: e1a00005     	mov	r0, r5
+   103d4: eb000038     	bl	0x104bc <uart0_puts>    @ imm = #0xe0
+   103d8: e59f0064     	ldr	r0, [pc, #0x64]         @ 0x10444 <minit_exception_dispatch+0x214>
+   103dc: e5942044     	ldr	r2, [r4, #0x44]
+   103e0: e59f3060     	ldr	r3, [pc, #0x60]         @ 0x10448 <minit_exception_dispatch+0x218>
+   103e4: e2801001     	add	r1, r0, #1
+   103e8: e59f005c     	ldr	r0, [pc, #0x5c]         @ 0x1044c <minit_exception_dispatch+0x21c>
+   103ec: e1520001     	cmp	r2, r1
+   103f0: 01a00003     	moveq	r0, r3
+   103f4: eb000030     	bl	0x104bc <uart0_puts>    @ imm = #0xc0
+   103f8: e59f0050     	ldr	r0, [pc, #0x50]         @ 0x10450 <minit_exception_dispatch+0x220>
+   103fc: eb00002e     	bl	0x104bc <uart0_puts>    @ imm = #0xb8
+   10400: ee070f90     	mcr	p15, #0x0, r0, c7, c0, #0x4
+   10404: eafffffd     	b	0x10400 <minit_exception_dispatch+0x1d0> @ imm = #-0xc
+   10408: d2 0a 01 00  	.word	0x00010ad2
+   1040c: 92 0c 01 00  	.word	0x00010c92
+   10410: 80 0d 01 00  	.word	0x00010d80
+   10414: 4e 0b 01 00  	.word	0x00010b4e
+   10418: 8a 0b 01 00  	.word	0x00010b8a
+   1041c: 4b 0c 01 00  	.word	0x00010c4b
+   10420: a0 0d 01 00  	.word	0x00010da0
+   10424: 29 0d 01 00  	.word	0x00010d29
+   10428: 51 0b 01 00  	.word	0x00010b51
+   1042c: 40 0c 01 00  	.word	0x00010c40
+   10430: 68 09 01 00  	.word	0x00010968
+   10434: 77 0d 01 00  	.word	0x00010d77
+   10438: c0 09 01 00  	.word	0x000109c0
+   1043c: 5b 0c 01 00  	.word	0x00010c5b
+   10440: 6f 09 01 00  	.word	0x0001096f
+   10444: bc 0d 01 00  	.word	0x00010dbc
+   10448: 30 0d 01 00  	.word	0x00010d30
+   1044c: 77 0a 01 00  	.word	0x00010a77
+   10450: e0 0a 01 00  	.word	0x00010ae0
+
+00010454 <uart0_init>:
+   10454: e3a00030     	mov	r0, #48
+   10458: e3a020ff     	mov	r2, #255
+   1045c: e3800416     	orr	r0, r0, #369098752
+   10460: e3a01000     	mov	r1, #0
+   10464: e3822c07     	orr	r2, r2, #1792
+   10468: e5801000     	str	r1, [r0]
+   1046c: e5802014     	str	r2, [r0, #0x14]
+   10470: e3a0200d     	mov	r2, #13
+   10474: e500200c     	str	r2, [r0, #-0xc]
+   10478: e3a02001     	mov	r2, #1
+   1047c: e5002008     	str	r2, [r0, #-0x8]
+   10480: e3a02070     	mov	r2, #112
+   10484: e5002004     	str	r2, [r0, #-0x4]
+   10488: e5801008     	str	r1, [r0, #0x8]
+   1048c: e3a01001     	mov	r1, #1
+   10490: e3811c03     	orr	r1, r1, #768
+   10494: e5801000     	str	r1, [r0]
+   10498: e12fff1e     	<unknown>
+
+0001049c <uart0_putc>:
+   1049c: e3a01018     	mov	r1, #24
+   104a0: e3811416     	orr	r1, r1, #369098752
+   104a4: e5912000     	ldr	r2, [r1]
+   104a8: e3120020     	tst	r2, #32
+   104ac: 1afffffc     	bne	0x104a4 <uart0_putc+0x8> @ imm = #-0x10
+   104b0: e3a01416     	mov	r1, #369098752
+   104b4: e5810000     	str	r0, [r1]
+   104b8: e12fff1e     	<unknown>
+
+000104bc <uart0_puts>:
+   104bc: e5d01000     	ldrb	r1, [r0]
+   104c0: e3510000     	cmp	r1, #0
+   104c4: 012fff1e     	<unknown>
+   104c8: e3a02018     	mov	r2, #24
+   104cc: e3822416     	orr	r2, r2, #369098752
+   104d0: e3a0c416     	mov	r12, #369098752
+   104d4: e5923000     	ldr	r3, [r2]
+   104d8: e3130020     	tst	r3, #32
+   104dc: 1afffffc     	bne	0x104d4 <uart0_puts+0x18> @ imm = #-0x10
+   104e0: e58c1000     	str	r1, [r12]
+   104e4: e5f01001     	ldrb	r1, [r0, #0x1]!
+   104e8: e3510000     	cmp	r1, #0
+   104ec: 1afffff8     	bne	0x104d4 <uart0_puts+0x18> @ imm = #-0x20
+   104f0: e12fff1e     	<unknown>
+
+000104f4 <uart0_puthex32>:
+   104f4: e3a01018     	mov	r1, #24
+   104f8: e3811416     	orr	r1, r1, #369098752
+   104fc: e5912000     	ldr	r2, [r1]
+   10500: e3120020     	tst	r2, #32
+   10504: 1afffffc     	bne	0x104fc <uart0_puthex32+0x8> @ imm = #-0x10
+   10508: e3a02416     	mov	r2, #369098752
+   1050c: e3a03030     	mov	r3, #48
+   10510: e5823000     	str	r3, [r2]
+   10514: e5912000     	ldr	r2, [r1]
+   10518: e3120020     	tst	r2, #32
+   1051c: 1afffffc     	bne	0x10514 <uart0_puthex32+0x20> @ imm = #-0x10
+   10520: e3a02416     	mov	r2, #369098752
+   10524: e59fc0fc     	ldr	r12, [pc, #0xfc]        @ 0x10628 <uart0_puthex32+0x134>
+   10528: e3a03078     	mov	r3, #120
+   1052c: e5823000     	str	r3, [r2]
+   10530: e7dc3e20     	ldrb	r3, [r12, r0, lsr #28]
+   10534: e5912000     	ldr	r2, [r1]
+   10538: e3120020     	tst	r2, #32
+   1053c: 1afffffc     	bne	0x10534 <uart0_puthex32+0x40> @ imm = #-0x10
+   10540: e3a02416     	mov	r2, #369098752
+   10544: e5823000     	str	r3, [r2]
+   10548: e3a0200f     	mov	r2, #15
+   1054c: e0022c20     	and	r2, r2, r0, lsr #24
+   10550: e7dc3002     	ldrb	r3, [r12, r2]
+   10554: e5912000     	ldr	r2, [r1]
+   10558: e3120020     	tst	r2, #32
+   1055c: 1afffffc     	bne	0x10554 <uart0_puthex32+0x60> @ imm = #-0x10
+   10560: e3a02416     	mov	r2, #369098752
+   10564: e5823000     	str	r3, [r2]
+   10568: e3a0200f     	mov	r2, #15
+   1056c: e0022a20     	and	r2, r2, r0, lsr #20
+   10570: e7dc3002     	ldrb	r3, [r12, r2]
+   10574: e5912000     	ldr	r2, [r1]
+   10578: e3120020     	tst	r2, #32
+   1057c: 1afffffc     	bne	0x10574 <uart0_puthex32+0x80> @ imm = #-0x10
+   10580: e3a02416     	mov	r2, #369098752
+   10584: e5823000     	str	r3, [r2]
+   10588: e3a0200f     	mov	r2, #15
+   1058c: e0022820     	and	r2, r2, r0, lsr #16
+   10590: e7dc3002     	ldrb	r3, [r12, r2]
+   10594: e5912000     	ldr	r2, [r1]
+   10598: e3120020     	tst	r2, #32
+   1059c: 1afffffc     	bne	0x10594 <uart0_puthex32+0xa0> @ imm = #-0x10
+   105a0: e3a02416     	mov	r2, #369098752
+   105a4: e5823000     	str	r3, [r2]
+   105a8: e3a0200f     	mov	r2, #15
+   105ac: e0022620     	and	r2, r2, r0, lsr #12
+   105b0: e7dc3002     	ldrb	r3, [r12, r2]
+   105b4: e5912000     	ldr	r2, [r1]
+   105b8: e3120020     	tst	r2, #32
+   105bc: 1afffffc     	bne	0x105b4 <uart0_puthex32+0xc0> @ imm = #-0x10
+   105c0: e3a02416     	mov	r2, #369098752
+   105c4: e5823000     	str	r3, [r2]
+   105c8: e3a0200f     	mov	r2, #15
+   105cc: e0022420     	and	r2, r2, r0, lsr #8
+   105d0: e7dc3002     	ldrb	r3, [r12, r2]
+   105d4: e5912000     	ldr	r2, [r1]
+   105d8: e3120020     	tst	r2, #32
+   105dc: 1afffffc     	bne	0x105d4 <uart0_puthex32+0xe0> @ imm = #-0x10
+   105e0: e3a02416     	mov	r2, #369098752
+   105e4: e5823000     	str	r3, [r2]
+   105e8: e3a0200f     	mov	r2, #15
+   105ec: e0022220     	and	r2, r2, r0, lsr #4
+   105f0: e7dc3002     	ldrb	r3, [r12, r2]
+   105f4: e5912000     	ldr	r2, [r1]
+   105f8: e3120020     	tst	r2, #32
+   105fc: 1afffffc     	bne	0x105f4 <uart0_puthex32+0x100> @ imm = #-0x10
+   10600: e3a02416     	mov	r2, #369098752
+   10604: e200000f     	and	r0, r0, #15
+   10608: e5823000     	str	r3, [r2]
+   1060c: e7dc0000     	ldrb	r0, [r12, r0]
+   10610: e5912000     	ldr	r2, [r1]
+   10614: e3120020     	tst	r2, #32
+   10618: 1afffffc     	bne	0x10610 <uart0_puthex32+0x11c> @ imm = #-0x10
+   1061c: e3a01416     	mov	r1, #369098752
+   10620: e5810000     	str	r0, [r1]
+   10624: e12fff1e     	<unknown>
+   10628: f6 0c 01 00  	.word	0x00010cf6
+
+0001062c <minit_test_trigger_undef>:
+   1062c: e7f000f0     	udf	#0x0
+   10630: eafffffd     	b	0x1062c <minit_test_trigger_undef> @ imm = #-0xc
+
+00010634 <minit_test_trigger_data_abort>:
+   10634: e59f0008     	ldr	r0, [pc, #0x8]          @ 0x10644 <minit_test_trigger_data_abort+0x10>
+   10638: e2800001     	add	r0, r0, #1
+   1063c: e5901000     	ldr	r1, [r0]
+   10640: eafffffb     	b	0x10634 <minit_test_trigger_data_abort> @ imm = #-0x14
+   10644: bc 0d 01 00  	.word	0x00010dbc
+
+00010648 <minit_test_run_undef>:
+   10648: e92d4800     	push	{r11, lr}
+   1064c: e1a0b00d     	mov	r11, sp
+   10650: e59f0014     	ldr	r0, [pc, #0x14]         @ 0x1066c <minit_test_run_undef+0x24>
+   10654: ebffff98     	bl	0x104bc <uart0_puts>    @ imm = #-0x1a0
+   10658: ebfffff3     	bl	0x1062c <minit_test_trigger_undef> @ imm = #-0x34
+   1065c: e59f000c     	ldr	r0, [pc, #0xc]          @ 0x10670 <minit_test_run_undef+0x28>
+   10660: ebffff95     	bl	0x104bc <uart0_puts>    @ imm = #-0x1ac
+   10664: ee070f90     	mcr	p15, #0x0, r0, c7, c0, #0x4
+   10668: eafffffd     	b	0x10664 <minit_test_run_undef+0x1c> @ imm = #-0xc
+   1066c: 5a 0b 01 00  	.word	0x00010b5a
+   10670: 93 0b 01 00  	.word	0x00010b93
+
+00010674 <minit_test_run_data_abort>:
+   10674: e92d4800     	push	{r11, lr}
+   10678: e1a0b00d     	mov	r11, sp
+   1067c: e59f007c     	ldr	r0, [pc, #0x7c]         @ 0x10700 <minit_test_run_data_abort+0x8c>
+   10680: ebffff8d     	bl	0x104bc <uart0_puts>    @ imm = #-0x1cc
+   10684: e3a05002     	mov	r5, #2
+   10688: e3855501     	orr	r5, r5, #4194304
+   1068c: ee110f10     	mrc	p15, #0x0, r0, c1, c0, #0x0
+   10690: e1800005     	orr	r0, r0, r5
+   10694: ee010f10     	mcr	p15, #0x0, r0, c1, c0, #0x0
+   10698: e59f0064     	ldr	r0, [pc, #0x64]         @ 0x10704 <minit_test_run_data_abort+0x90>
+   1069c: ee114f10     	mrc	p15, #0x0, r4, c1, c0, #0x0
+   106a0: ebffff85     	bl	0x104bc <uart0_puts>    @ imm = #-0x1ec
+   106a4: e1a00004     	mov	r0, r4
+   106a8: ebffff91     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x1bc
+   106ac: e59f0054     	ldr	r0, [pc, #0x54]         @ 0x10708 <minit_test_run_data_abort+0x94>
+   106b0: ebffff81     	bl	0x104bc <uart0_puts>    @ imm = #-0x1fc
+   106b4: e0040005     	and	r0, r4, r5
+   106b8: e1500005     	cmp	r0, r5
+   106bc: 1a00000b     	bne	0x106f0 <minit_test_run_data_abort+0x7c> @ imm = #0x2c
+   106c0: e59f0048     	ldr	r0, [pc, #0x48]         @ 0x10710 <minit_test_run_data_abort+0x9c>
+   106c4: ebffff7c     	bl	0x104bc <uart0_puts>    @ imm = #-0x210
+   106c8: e59f0044     	ldr	r0, [pc, #0x44]         @ 0x10714 <minit_test_run_data_abort+0xa0>
+   106cc: e2800001     	add	r0, r0, #1
+   106d0: ebffff87     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x1e4
+   106d4: e59f002c     	ldr	r0, [pc, #0x2c]         @ 0x10708 <minit_test_run_data_abort+0x94>
+   106d8: ebffff77     	bl	0x104bc <uart0_puts>    @ imm = #-0x224
+   106dc: ebffffd4     	bl	0x10634 <minit_test_trigger_data_abort> @ imm = #-0xb0
+   106e0: e59f0030     	ldr	r0, [pc, #0x30]         @ 0x10718 <minit_test_run_data_abort+0xa4>
+   106e4: ebffff74     	bl	0x104bc <uart0_puts>    @ imm = #-0x230
+   106e8: ee070f90     	mcr	p15, #0x0, r0, c7, c0, #0x4
+   106ec: eafffffd     	b	0x106e8 <minit_test_run_data_abort+0x74> @ imm = #-0xc
+   106f0: e59f0014     	ldr	r0, [pc, #0x14]         @ 0x1070c <minit_test_run_data_abort+0x98>
+   106f4: ebffff70     	bl	0x104bc <uart0_puts>    @ imm = #-0x240
+   106f8: ee070f90     	mcr	p15, #0x0, r0, c7, c0, #0x4
+   106fc: eafffffd     	b	0x106f8 <minit_test_run_data_abort+0x84> @ imm = #-0xc
+   10700: 8b 09 01 00  	.word	0x0001098b
+   10704: d0 0b 01 00  	.word	0x00010bd0
+   10708: 4e 0b 01 00  	.word	0x00010b4e
+   1070c: eb 09 01 00  	.word	0x000109eb
+   10710: 07 0d 01 00  	.word	0x00010d07
+   10714: bc 0d 01 00  	.word	0x00010dbc
+   10718: 96 0a 01 00  	.word	0x00010a96
+
+0001071c <kmain>:
+   1071c: e92d4800     	push	{r11, lr}
+   10720: e1a0b00d     	mov	r11, sp
+   10724: ebffff4a     	bl	0x10454 <uart0_init>    @ imm = #-0x2d8
+   10728: e59f01c0     	ldr	r0, [pc, #0x1c0]        @ 0x108f0 <kmain+0x1d4>
+   1072c: ebffff62     	bl	0x104bc <uart0_puts>    @ imm = #-0x278
+   10730: e59f01bc     	ldr	r0, [pc, #0x1bc]        @ 0x108f4 <kmain+0x1d8>
+   10734: ebffff60     	bl	0x104bc <uart0_puts>    @ imm = #-0x280
+   10738: e59f41b8     	ldr	r4, [pc, #0x1b8]        @ 0x108f8 <kmain+0x1dc>
+   1073c: e59f11b8     	ldr	r1, [pc, #0x1b8]        @ 0x108fc <kmain+0x1e0>
+   10740: e5940000     	ldr	r0, [r4]
+   10744: e1500001     	cmp	r0, r1
+   10748: 1a000003     	bne	0x1075c <kmain+0x40>    @ imm = #0xc
+   1074c: e59f0210     	ldr	r0, [pc, #0x210]        @ 0x10964 <kmain+0x248>
+   10750: ebffff59     	bl	0x104bc <uart0_puts>    @ imm = #-0x29c
+   10754: ee070f90     	mcr	p15, #0x0, r0, c7, c0, #0x4
+   10758: eafffffd     	b	0x10754 <kmain+0x38>    @ imm = #-0xc
+   1075c: e59f019c     	ldr	r0, [pc, #0x19c]        @ 0x10900 <kmain+0x1e4>
+   10760: ebffff55     	bl	0x104bc <uart0_puts>    @ imm = #-0x2ac
+   10764: e5940000     	ldr	r0, [r4]
+   10768: ebffff61     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x27c
+   1076c: e59f0190     	ldr	r0, [pc, #0x190]        @ 0x10904 <kmain+0x1e8>
+   10770: ebffff51     	bl	0x104bc <uart0_puts>    @ imm = #-0x2bc
+   10774: e5d40001     	ldrb	r0, [r4, #0x1]
+   10778: e3100020     	tst	r0, #32
+   1077c: 1a000057     	bne	0x108e0 <kmain+0x1c4>   @ imm = #0x15c
+   10780: e59f0184     	ldr	r0, [pc, #0x184]        @ 0x1090c <kmain+0x1f0>
+   10784: ebffff4c     	bl	0x104bc <uart0_puts>    @ imm = #-0x2d0
+   10788: e59f0180     	ldr	r0, [pc, #0x180]        @ 0x10910 <kmain+0x1f4>
+   1078c: ebffff4a     	bl	0x104bc <uart0_puts>    @ imm = #-0x2d8
+   10790: e10f0000     	mrs	r0, apsr
+   10794: ebffff56     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x2a8
+   10798: e59f4164     	ldr	r4, [pc, #0x164]        @ 0x10904 <kmain+0x1e8>
+   1079c: e1a00004     	mov	r0, r4
+   107a0: ebffff45     	bl	0x104bc <uart0_puts>    @ imm = #-0x2ec
+   107a4: e59f5168     	ldr	r5, [pc, #0x168]        @ 0x10914 <kmain+0x1f8>
+   107a8: e1a00005     	mov	r0, r5
+   107ac: ebffff42     	bl	0x104bc <uart0_puts>    @ imm = #-0x2f8
+   107b0: e59f0160     	ldr	r0, [pc, #0x160]        @ 0x10918 <kmain+0x1fc>
+   107b4: ebffff40     	bl	0x104bc <uart0_puts>    @ imm = #-0x300
+   107b8: e59f615c     	ldr	r6, [pc, #0x15c]        @ 0x1091c <kmain+0x200>
+   107bc: e1a00006     	mov	r0, r6
+   107c0: ebffff3d     	bl	0x104bc <uart0_puts>    @ imm = #-0x30c
+   107c4: e59f0154     	ldr	r0, [pc, #0x154]        @ 0x10920 <kmain+0x204>
+   107c8: ebffff49     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x2dc
+   107cc: e59f7150     	ldr	r7, [pc, #0x150]        @ 0x10924 <kmain+0x208>
+   107d0: e1a00007     	mov	r0, r7
+   107d4: ebffff38     	bl	0x104bc <uart0_puts>    @ imm = #-0x320
+   107d8: e59f0148     	ldr	r0, [pc, #0x148]        @ 0x10928 <kmain+0x20c>
+   107dc: ebffff44     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x2f0
+   107e0: e1a00004     	mov	r0, r4
+   107e4: ebffff34     	bl	0x104bc <uart0_puts>    @ imm = #-0x330
+   107e8: e1a00005     	mov	r0, r5
+   107ec: ebffff32     	bl	0x104bc <uart0_puts>    @ imm = #-0x338
+   107f0: e59f0134     	ldr	r0, [pc, #0x134]        @ 0x1092c <kmain+0x210>
+   107f4: ebffff30     	bl	0x104bc <uart0_puts>    @ imm = #-0x340
+   107f8: e1a00006     	mov	r0, r6
+   107fc: ebffff2e     	bl	0x104bc <uart0_puts>    @ imm = #-0x348
+   10800: e59f0128     	ldr	r0, [pc, #0x128]        @ 0x10930 <kmain+0x214>
+   10804: ebffff3a     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x318
+   10808: e1a00007     	mov	r0, r7
+   1080c: ebffff2a     	bl	0x104bc <uart0_puts>    @ imm = #-0x358
+   10810: e59f011c     	ldr	r0, [pc, #0x11c]        @ 0x10934 <kmain+0x218>
+   10814: ebffff36     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x328
+   10818: e1a00004     	mov	r0, r4
+   1081c: ebffff26     	bl	0x104bc <uart0_puts>    @ imm = #-0x368
+   10820: e1a00005     	mov	r0, r5
+   10824: ebffff24     	bl	0x104bc <uart0_puts>    @ imm = #-0x370
+   10828: e59f0108     	ldr	r0, [pc, #0x108]        @ 0x10938 <kmain+0x21c>
+   1082c: ebffff22     	bl	0x104bc <uart0_puts>    @ imm = #-0x378
+   10830: e1a00006     	mov	r0, r6
+   10834: ebffff20     	bl	0x104bc <uart0_puts>    @ imm = #-0x380
+   10838: e59f00fc     	ldr	r0, [pc, #0xfc]         @ 0x1093c <kmain+0x220>
+   1083c: ebffff2c     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x350
+   10840: e1a00007     	mov	r0, r7
+   10844: ebffff1c     	bl	0x104bc <uart0_puts>    @ imm = #-0x390
+   10848: e59f00f0     	ldr	r0, [pc, #0xf0]         @ 0x10940 <kmain+0x224>
+   1084c: ebffff28     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x360
+   10850: e1a00004     	mov	r0, r4
+   10854: ebffff18     	bl	0x104bc <uart0_puts>    @ imm = #-0x3a0
+   10858: e1a00005     	mov	r0, r5
+   1085c: ebffff16     	bl	0x104bc <uart0_puts>    @ imm = #-0x3a8
+   10860: e59f00dc     	ldr	r0, [pc, #0xdc]         @ 0x10944 <kmain+0x228>
+   10864: ebffff14     	bl	0x104bc <uart0_puts>    @ imm = #-0x3b0
+   10868: e1a00006     	mov	r0, r6
+   1086c: ebffff12     	bl	0x104bc <uart0_puts>    @ imm = #-0x3b8
+   10870: e59f00d0     	ldr	r0, [pc, #0xd0]         @ 0x10948 <kmain+0x22c>
+   10874: ebffff1e     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x388
+   10878: e1a00007     	mov	r0, r7
+   1087c: ebffff0e     	bl	0x104bc <uart0_puts>    @ imm = #-0x3c8
+   10880: e59f00c4     	ldr	r0, [pc, #0xc4]         @ 0x1094c <kmain+0x230>
+   10884: ebffff1a     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x398
+   10888: e1a00004     	mov	r0, r4
+   1088c: ebffff0a     	bl	0x104bc <uart0_puts>    @ imm = #-0x3d8
+   10890: e1a00005     	mov	r0, r5
+   10894: ebffff08     	bl	0x104bc <uart0_puts>    @ imm = #-0x3e0
+   10898: e59f00b0     	ldr	r0, [pc, #0xb0]         @ 0x10950 <kmain+0x234>
+   1089c: ebffff06     	bl	0x104bc <uart0_puts>    @ imm = #-0x3e8
+   108a0: e1a00006     	mov	r0, r6
+   108a4: ebffff04     	bl	0x104bc <uart0_puts>    @ imm = #-0x3f0
+   108a8: e59f00a4     	ldr	r0, [pc, #0xa4]         @ 0x10954 <kmain+0x238>
+   108ac: ebffff10     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x3c0
+   108b0: e1a00007     	mov	r0, r7
+   108b4: ebffff00     	bl	0x104bc <uart0_puts>    @ imm = #-0x400
+   108b8: e59f0098     	ldr	r0, [pc, #0x98]         @ 0x10958 <kmain+0x23c>
+   108bc: ebffff0c     	bl	0x104f4 <uart0_puthex32> @ imm = #-0x3d0
+   108c0: e1a00004     	mov	r0, r4
+   108c4: ebfffefc     	bl	0x104bc <uart0_puts>    @ imm = #-0x410
+   108c8: e59f008c     	ldr	r0, [pc, #0x8c]         @ 0x1095c <kmain+0x240>
+   108cc: ebfffefa     	bl	0x104bc <uart0_puts>    @ imm = #-0x418
+   108d0: e59f0088     	ldr	r0, [pc, #0x88]         @ 0x10960 <kmain+0x244>
+   108d4: ebfffef8     	bl	0x104bc <uart0_puts>    @ imm = #-0x420
+   108d8: ee070f90     	mcr	p15, #0x0, r0, c7, c0, #0x4
+   108dc: eafffffd     	b	0x108d8 <kmain+0x1bc>   @ imm = #-0xc
+   108e0: e59f0020     	ldr	r0, [pc, #0x20]         @ 0x10908 <kmain+0x1ec>
+   108e4: ebfffef4     	bl	0x104bc <uart0_puts>    @ imm = #-0x430
+   108e8: ee070f90     	mcr	p15, #0x0, r0, c7, c0, #0x4
+   108ec: eafffffd     	b	0x108e8 <kmain+0x1cc>   @ imm = #-0xc
+   108f0: a5 0c 01 00  	.word	0x00010ca5
+   108f4: f8 0a 01 00  	.word	0x00010af8
+   108f8: c4 0d 01 00  	.word	0x00010dc4
+   108fc: aa aa aa aa  	.word	0xaaaaaaaa
+   10900: d5 09 01 00  	.word	0x000109d5
+   10904: 4e 0b 01 00  	.word	0x00010b4e
+   10908: 0d 0c 01 00  	.word	0x00010c0d
+   1090c: c0 0c 01 00  	.word	0x00010cc0
+   10910: c8 0a 01 00  	.word	0x00010ac8
+   10914: eb 0b 01 00  	.word	0x00010beb
+   10918: 47 0c 01 00  	.word	0x00010c47
+   1091c: 54 0a 01 00  	.word	0x00010a54
+   10920: d0 1d 01 00  	.word	0x00011dd0
+   10924: 59 0c 01 00  	.word	0x00010c59
+   10928: d0 3d 01 00  	.word	0x00013dd0
+   1092c: e7 0b 01 00  	.word	0x00010be7
+   10930: d0 15 01 00  	.word	0x000115d0
+   10934: d0 19 01 00  	.word	0x000119d0
+   10938: 86 0b 01 00  	.word	0x00010b86
+   1093c: d0 19 01 00  	.word	0x000119d0
+   10940: d0 1d 01 00  	.word	0x00011dd0
+   10944: 8a 0a 01 00  	.word	0x00010a8a
+   10948: d0 0d 01 00  	.word	0x00010dd0
+   1094c: d0 11 01 00  	.word	0x000111d0
+   10950: 8e 0a 01 00  	.word	0x00010a8e
+   10954: d0 11 01 00  	.word	0x000111d0
+   10958: d0 15 01 00  	.word	0x000115d0
+   1095c: 3c 0b 01 00  	.word	0x00010b3c
+   10960: 5a 0a 01 00  	.word	0x00010a5a
+   10964: 1b 0a 01 00  	.word	0x00010a1b

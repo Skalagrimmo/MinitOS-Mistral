@@ -1,0 +1,123 @@
+
+build/minitos-k2-normal.elf:	file format elf32-littlearm
+
+Disassembly of section .text:
+
+000100bc <minit_vec_reset>:
+   100bc: eaffffcf     	b	0x10000 <_start>        @ imm = #-0xc4
+
+000100c0 <minit_entry_und>:
+   100c0: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   100c4: e24dd014     	sub	sp, sp, #20
+   100c8: e1a0000e     	mov	r0, lr
+   100cc: e3a01004     	mov	r1, #4
+   100d0: e58d0034     	str	r0, [sp, #0x34]
+   100d4: e14f0000     	mrs	r0, spsr
+   100d8: e58d0038     	str	r0, [sp, #0x38]
+   100dc: e58d103c     	str	r1, [sp, #0x3c]
+   100e0: e3a00000     	mov	r0, #0
+   100e4: e58d0040     	str	r0, [sp, #0x40]
+   100e8: e58d0044     	str	r0, [sp, #0x44]
+   100ec: e1a0000d     	mov	r0, sp
+   100f0: ea00004e     	b	0x10230 <minit_exception_dispatch> @ imm = #0x138
+
+000100f4 <minit_entry_svc>:
+   100f4: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   100f8: e24dd014     	sub	sp, sp, #20
+   100fc: e1a0000e     	mov	r0, lr
+   10100: e3a01008     	mov	r1, #8
+   10104: e58d0034     	str	r0, [sp, #0x34]
+   10108: e14f0000     	mrs	r0, spsr
+   1010c: e58d0038     	str	r0, [sp, #0x38]
+   10110: e58d103c     	str	r1, [sp, #0x3c]
+   10114: e3a00000     	mov	r0, #0
+   10118: e58d0040     	str	r0, [sp, #0x40]
+   1011c: e58d0044     	str	r0, [sp, #0x44]
+   10120: e1a0000d     	mov	r0, sp
+   10124: ea000041     	b	0x10230 <minit_exception_dispatch> @ imm = #0x104
+
+00010128 <minit_entry_pabt>:
+   10128: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   1012c: e24dd014     	sub	sp, sp, #20
+   10130: e1a0000e     	mov	r0, lr
+   10134: e3a0100c     	mov	r1, #12
+   10138: e58d0034     	str	r0, [sp, #0x34]
+   1013c: e14f0000     	mrs	r0, spsr
+   10140: e58d0038     	str	r0, [sp, #0x38]
+   10144: e58d103c     	str	r1, [sp, #0x3c]
+   10148: e3a00000     	mov	r0, #0
+   1014c: e58d0040     	str	r0, [sp, #0x40]
+   10150: e58d0044     	str	r0, [sp, #0x44]
+   10154: e1a0000d     	mov	r0, sp
+   10158: ea000034     	b	0x10230 <minit_exception_dispatch> @ imm = #0xd0
+
+0001015c <minit_entry_dabt>:
+   1015c: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   10160: e24dd014     	sub	sp, sp, #20
+   10164: e1a0000e     	mov	r0, lr
+   10168: e3a01010     	mov	r1, #16
+   1016c: e58d0034     	str	r0, [sp, #0x34]
+   10170: e14f0000     	mrs	r0, spsr
+   10174: e58d0038     	str	r0, [sp, #0x38]
+   10178: e58d103c     	str	r1, [sp, #0x3c]
+   1017c: ee150f10     	mrc	p15, #0x0, r0, c5, c0, #0x0
+   10180: e58d0040     	str	r0, [sp, #0x40]
+   10184: ee160f10     	mrc	p15, #0x0, r0, c6, c0, #0x0
+   10188: e58d0044     	str	r0, [sp, #0x44]
+   1018c: e1a0000d     	mov	r0, sp
+   10190: ea000026     	b	0x10230 <minit_exception_dispatch> @ imm = #0x98
+
+00010194 <minit_entry_reserved>:
+   10194: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   10198: e24dd014     	sub	sp, sp, #20
+   1019c: e1a0000e     	mov	r0, lr
+   101a0: e3a01014     	mov	r1, #20
+   101a4: e58d0034     	str	r0, [sp, #0x34]
+   101a8: e14f0000     	mrs	r0, spsr
+   101ac: e58d0038     	str	r0, [sp, #0x38]
+   101b0: e58d103c     	str	r1, [sp, #0x3c]
+   101b4: e3a00000     	mov	r0, #0
+   101b8: e58d0040     	str	r0, [sp, #0x40]
+   101bc: e58d0044     	str	r0, [sp, #0x44]
+   101c0: e1a0000d     	mov	r0, sp
+   101c4: ea000019     	b	0x10230 <minit_exception_dispatch> @ imm = #0x64
+
+000101c8 <minit_entry_irq>:
+   101c8: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   101cc: e24dd014     	sub	sp, sp, #20
+   101d0: e1a0000e     	mov	r0, lr
+   101d4: e3a01018     	mov	r1, #24
+   101d8: e58d0034     	str	r0, [sp, #0x34]
+   101dc: e14f0000     	mrs	r0, spsr
+   101e0: e58d0038     	str	r0, [sp, #0x38]
+   101e4: e58d103c     	str	r1, [sp, #0x3c]
+   101e8: e3a00000     	mov	r0, #0
+   101ec: e58d0040     	str	r0, [sp, #0x40]
+   101f0: e58d0044     	str	r0, [sp, #0x44]
+   101f4: e1a0000d     	mov	r0, sp
+   101f8: ea00000c     	b	0x10230 <minit_exception_dispatch> @ imm = #0x30
+
+000101fc <minit_entry_fiq>:
+   101fc: e92d1fff     	push	{r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12}
+   10200: e24dd014     	sub	sp, sp, #20
+   10204: e1a0000e     	mov	r0, lr
+   10208: e3a0101c     	mov	r1, #28
+   1020c: e58d0034     	str	r0, [sp, #0x34]
+   10210: e14f0000     	mrs	r0, spsr
+   10214: e58d0038     	str	r0, [sp, #0x38]
+   10218: e58d103c     	str	r1, [sp, #0x3c]
+   1021c: e3a00000     	mov	r0, #0
+   10220: e58d0040     	str	r0, [sp, #0x40]
+   10224: e58d0044     	str	r0, [sp, #0x44]
+   10228: e1a0000d     	mov	r0, sp
+   1022c: eaffffff     	b	0x10230 <minit_exception_dispatch> @ imm = #-0x4
+
+0001062c <minit_test_trigger_undef>:
+   1062c: e7f000f0     	udf	#0x0
+   10630: eafffffd     	b	0x1062c <minit_test_trigger_undef> @ imm = #-0xc
+
+00010634 <minit_test_trigger_data_abort>:
+   10634: e59f0008     	ldr	r0, [pc, #0x8]          @ 0x10644 <minit_test_trigger_data_abort+0x10>
+   10638: e2800001     	add	r0, r0, #1
+   1063c: e5901000     	ldr	r1, [r0]
+   10640: eafffffb     	b	0x10634 <minit_test_trigger_data_abort> @ imm = #-0x14

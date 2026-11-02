@@ -1,0 +1,27 @@
+
+MINITOS KERNEL STARTED
+K2 platform: qemu-system-arm -M integratorcp -cpu arm1136 -m 128M
+K2 sctlr: 0x00050078
+K2 vectors: low @ 0x00000000
+K2 cpsr: 0x600001d3
+K2 stack: svc 0x00011db0-0x00013db0
+K2 stack: und 0x000115b0-0x000119b0
+K2 stack: abt 0x000119b0-0x00011db0
+K2 stack: irq 0x00010db0-0x000111b0
+K2 stack: fiq 0x000111b0-0x000115b0
+K2 test: data-abort
+K2 test: strict alignment via SCTLR.U=1, SCTLR.A=1
+K2 sctlr (after RMW): 0x0045007a
+K2 test: unaligned word LDR from 0x00010d9d
+
+EXCEPTION: DATA ABORT
+vector: 0x00000010
+mode: ABT
+lr: 0x00010644
+spsr: 0x600001d3
+dfsr: 0x00000001
+dfar: 0x00010d9d
+fault_pc: 0x0001063c
+K2 DFSR STATUS UNEXPECTED: 0x00000000
+K2 DFAR MATCH TEST AREA
+K2 EXCEPTION CAPTURED
