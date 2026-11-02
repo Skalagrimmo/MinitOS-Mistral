@@ -1,0 +1,17 @@
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -fno-common -fno-unwind-tables -fno-asynchronous-unwind-tables -c src/boot/start.S -o build/boot/start.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -fno-common -fno-unwind-tables -fno-asynchronous-unwind-tables -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -c src/drivers/pl011.c -o build/drivers/pl011.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fno-stack-protector -fno-pic -fno-pie -fno-common -fno-unwind-tables -fno-asynchronous-unwind-tables -std=c11 -O2 -g -Iinclude -Wall -Wextra -Werror -c src/kernel/main.c -o build/kernel/main.o
+clang --target=arm-none-eabi -mcpu=arm1136jf-s -marm -mfloat-abi=soft -nostdlib -static -fuse-ld=lld -Wl,-T,linker/integratorcp.ld -Wl,-Map,build/minitos-k1.map -Wl,--build-id=none build/boot/start.o build/drivers/pl011.o build/kernel/main.o -o build/minitos-k1.elf
+ld.lld: error: undefined symbol: __stack_top__
+>>> referenced by build/boot/start.o:(.text.boot+0x24)
+>>> referenced by main.c:0 (/home/runner/work/MinitOS-Mistral/MinitOS-Mistral/src/kernel/main.c:0)
+>>>               build/kernel/main.o:(kmain)
+
+ld.lld: error: undefined symbol: __image_start__
+>>> referenced by main.c:0 (/home/runner/work/MinitOS-Mistral/MinitOS-Mistral/src/kernel/main.c:0)
+>>>               build/kernel/main.o:(kmain)
+
+ld.lld: error: K2: vector table must be exactly 32 bytes
+ld.lld: error: K2: vector table must be exactly 32 bytes
+clang: error: ld.lld command failed with exit code 1 (use -v to see invocation)
+make: *** [Makefile:48: build/minitos-k1.elf] Error 1
