@@ -1,0 +1,13 @@
+
+MINITOS KERNEL STARTED
+K2 platform: qemu-system-arm -M integratorcp -cpu arm1136 -m 128M
+K2 sctlr: 0x00050078
+K2 vectors: low @ 0x00000000
+K2 cpsr: 0x600001d3
+K2 stack: svc 0x00011dd0-0x00013dd0
+K2 stack: und 0x000115d0-0x000119d0
+K2 stack: abt 0x000119d0-0x00011dd0
+K2 stack: irq 0x00010dd0-0x000111d0
+K2 stack: fiq 0x000111d0-0x000115d0
+K2 test: normal
+K2 idle: entering WFI loop
