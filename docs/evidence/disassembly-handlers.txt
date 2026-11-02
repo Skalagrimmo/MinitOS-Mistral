@@ -106,7 +106,8 @@ Disassembly of section .text:
    10214: e58d0038     	str	r0, [sp, #0x38]
    10218: e58d103c     	str	r1, [sp, #0x3c]
    1021c: e3a00000     	mov	r0, #0
-   10220: e58d0044     	str	r0, [sp, #0x44]
+   10220: e58d0040     	str	r0, [sp, #0x40]
+   10224: e58d0044     	str	r0, [sp, #0x44]
    10228: e1a0000d     	mov	r0, sp
    1022c: eaffffff     	b	0x10230 <minit_exception_dispatch> @ imm = #-0x4
 
