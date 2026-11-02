@@ -60,11 +60,12 @@ disasm: all
 	$(OBJDUMP) -d --triple=arm-none-eabi $(ELF) > $(BUILD)/disassembly.txt
 
 info:
-	$(CC) --version | head -1
-	$(OBJCOPY) --version | head -1
-	$(OBJDUMP) --version | head -1
-	$(READELF) --version | head -1
-	qemu-system-arm --version | head -1
+	# Full version dumps: 'tool | head' breaks under 'bash -o pipefail' (SIGPIPE).
+	$(CC) --version
+	$(OBJCOPY) --version
+	$(OBJDUMP) --version
+	$(READELF) --version
+	qemu-system-arm --version
 
 clean:
 	rm -rf $(BUILD)

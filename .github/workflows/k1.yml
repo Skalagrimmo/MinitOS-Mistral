@@ -7,6 +7,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   k1:
     runs-on: ubuntu-latest
@@ -18,36 +21,47 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends clang lld llvm binutils qemu-system-arm python3
+          mkdir -p evidence
 
       - name: Record tool versions
         run: |
-          make info
+          make info 2>&1 | tee evidence/00-versions.log
 
       - name: Build and statically verify (acceptance 1, 2)
         run: |
           make clean
-          make verify
+          make verify 2>&1 | tee evidence/01-verify.log
 
       - name: Run kernel in QEMU and capture UART (acceptance 4, 5)
         run: |
+          set +e
           timeout 20 qemu-system-arm \
             -M integratorcp -cpu arm1136 -m 64M \
             -display none -serial file:build/uart.log \
-            -kernel build/minitos-k1.elf </dev/null || true
-          echo '=== UART log ==='
-          cat build/uart.log
-          echo '=== banner checks ==='
-          grep -a 'MINITOS KERNEL STARTED' build/uart.log
-          grep -a 'K1 image base' build/uart.log
+            -kernel build/minitos-k1.elf </dev/null > evidence/02-qemu.log 2>&1
+          rc=$?
+          set -e
+          echo "qemu exit code: $rc" >> evidence/02-qemu.log
+          if [ -f build/uart.log ]; then
+            cp build/uart.log evidence/02-uart.log
+            echo '=== UART log ==='
+            cat build/uart.log
+            echo '=== banner checks ==='
+            grep -a 'MINITOS KERNEL STARTED' build/uart.log
+            grep -a 'K1 image base' build/uart.log
+          else
+            echo 'FATAL: QEMU produced no build/uart.log' | tee -a evidence/02-qemu.log
+            exit 1
+          fi
 
       - name: Reproducibility check: rebuild must be byte-identical (acceptance 6)
         run: |
           s1=$(sha256sum build/minitos-k1.elf | awk '{print $1}')
           make clean
-          make all
+          make all 2>&1 | tee evidence/03-rebuild.log
           s2=$(sha256sum build/minitos-k1.elf | awk '{print $1}')
-          echo "build 1 sha256: $s1"
-          echo "build 2 sha256: $s2"
+          echo "build 1 sha256: $s1" | tee -a evidence/03-rebuild.log
+          echo "build 2 sha256: $s2" | tee -a evidence/03-rebuild.log
           test "$s1" = "$s2"
 
       - name: Upload build artifacts
@@ -58,4 +72,16 @@ jobs:
             build/minitos-k1.elf
             build/minitos-k1.bin
             build/minitos-k1.map
-            build/uart.log
+            evidence/02-uart.log
+
+      - name: Publish CI evidence branch
+        if: always()
+        run: |
+          git config user.name "k1-ci-bot"
+          git config user.email "actions@github.com"
+          mkdir -p "ci/$GITHUB_RUN_NUMBER"
+          cp -r evidence/. "ci/$GITHUB_RUN_NUMBER/" 2>/dev/null || echo '(no evidence captured)' > "ci/$GITHUB_RUN_NUMBER/EMPTY"
+          git add ci
+          if git diff --cached --quiet; then echo 'nothing to publish'; exit 0; fi
+          git commit -m "CI evidence for run $GITHUB_RUN_NUMBER"
+          git push origin "HEAD:refs/heads/ci/evidence/$GITHUB_RUN_NUMBER"
