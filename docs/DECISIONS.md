@@ -107,7 +107,7 @@ of ELF and BIN for reproducibility.
 The first K2 link failed the exact-size ASSERT on .stacks: an internal
 ". = ALIGN(16)" counts its padding into SIZEOF(.stacks). The fix aligns
 the section start in the section address expression (.stacks ALIGN(16)
-(NNOLOAD) without internal alignment), so SIZEOF is exactly 0x3000.
+(NOLOAD) without internal alignment), so SIZEOF is exactly 0x3000.
 Lesson recorded from executed CI run 1, not from theory.
 
 ## ADR-028: K2 evidence in its own branch namespace
